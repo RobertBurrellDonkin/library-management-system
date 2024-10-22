@@ -13,7 +13,7 @@ import static java.util.Objects.nonNull;
 import static name.robertburrelldonkin.library.domain.Book.aBook;
 
 /**
- * Thread safe library management service
+ * Thread safe library management service.
  */
 public class Library {
 
