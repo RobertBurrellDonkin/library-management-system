@@ -82,6 +82,11 @@ we're asked for frequently accessed books.
   it's just findByISbn that should be cached. This simplifies the logic.
   * We could perhaps add books returned by search but that seems like adding complexity without
   compelling reason.
+* REST design TODO (see notes)
+ * Considered a reactive design but reject 
+ * POST -> created 
+   * There isn't a clear consensus around the right HTTP status code to return when a resource already exist,
+   Let's return 409. 
 
   
 
