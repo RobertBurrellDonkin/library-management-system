@@ -61,4 +61,30 @@ public class Library {
     public List<Book> findBooksByAuthor(String author) {
         return books.values().stream().filter(book -> author.equals(book.getAuthor())).toList();
     }
+
+    /**
+     * Borrows a book, decreasing the available copies by one.
+     *
+     * @param isbn not null
+     * @return true when a book with the given ISBN is present in the library,
+     * false otherwise
+     */
+    public boolean borrowBook(String isbn) {
+        final var bookByISBN = findBookByISBN(isbn);
+        bookByISBN.ifPresent(Book::decrementAndGetAvailableCopies);
+        return bookByISBN.isPresent();
+    }
+
+    /**
+     * Returns a book, incrementing the available copies by one.
+     *
+     * @param isbn not null
+     * @return true when a book with the given ISBN is present in the library,
+     *  false otherwise
+     */
+    public boolean returnBook(String isbn) {
+        final var bookByISBN = findBookByISBN(isbn);
+        bookByISBN.ifPresent(Book::incrementAndGetAvailableCopies);
+        return bookByISBN.isPresent();
+    }
 }

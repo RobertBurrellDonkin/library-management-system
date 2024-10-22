@@ -1,7 +1,12 @@
 package name.robertburrelldonkin.library.domain;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Thread safe domain model for Book.
+ * The {@link #availableCopies} attribute may be mutated safely from concurrent threads.
+ */
 public final class Book {
 
     public static Builder aBook() {
@@ -12,7 +17,8 @@ public final class Book {
     private final String title;
     private final String author;
     private final int publicationYear;
-    private final int availableCopies;
+    /** Thread safe concurrent mutation */
+    private final AtomicInteger availableCopies;
 
     private Book(final String isbn,
                  final String title,
@@ -23,7 +29,7 @@ public final class Book {
         this.title = title;
         this.author = author;
         this.publicationYear = publicationYear;
-        this.availableCopies = availableCopies;
+        this.availableCopies = new AtomicInteger(availableCopies);
     }
 
     public String getIsbn() {
@@ -43,8 +49,29 @@ public final class Book {
     }
 
     public int getAvailableCopies() {
-        return availableCopies;
+        return availableCopies.get();
     }
+
+    /**
+     * Increases the number of available copies by one.
+     * An atomic operation supporting safe concurrent access by multiple threads.
+     *
+     * @return number of available copies after modification
+     */
+    public int incrementAndGetAvailableCopies() {
+        return availableCopies.incrementAndGet();
+    }
+
+    /**
+     * Decreases the number of available copies by one.
+     * An atomic operation supporting safe concurrent access by multiple threads.
+     *
+     * @return number of available copies after modification
+     */
+    public int decrementAndGetAvailableCopies() {
+        return availableCopies.decrementAndGet();
+    }
+
 
     @Override
     public boolean equals(Object o) {

@@ -18,6 +18,8 @@ class LibraryTest {
     Book aBookByAnAuthor;
     Book anotherBookByAnAuthor;
     Book aBookByAnotherAuthor;
+    Book aBookWithOneCopy;
+    Book aBookWithNoCopies;
 
     @BeforeEach
     void setUp() {
@@ -26,6 +28,8 @@ class LibraryTest {
         aBookByAnAuthor = createRandomBookBy("an-author");
         anotherBookByAnAuthor = createRandomBookBy("an-author");
         aBookByAnotherAuthor = createRandomBookBy("another-author");
+        aBookWithOneCopy = createBookWithOneCopy();
+        aBookWithNoCopies = createBookWithNoCopies();
     }
 
     @Nested
@@ -98,6 +102,40 @@ class LibraryTest {
             library.addBook(aBookByAnotherAuthor);
 
             assertThat(library.findBooksByAuthor(aBookByAnAuthor.getAuthor()), containsInAnyOrder(aBookByAnAuthor, anotherBookByAnAuthor));
+        }
+    }
+
+    @Nested
+    class BorrowBook {
+        @Test
+        void whenABookIsInTheLibraryThenBorrowBookShouldDecreaseAvailableCopiesByOne() {
+            library.addBook(aBookWithOneCopy);
+
+            assertThat(library.borrowBook(aBookWithOneCopy.getIsbn()), is(true));
+
+            assertThat(library.findBookByISBN(aBookWithOneCopy.getIsbn()).orElseThrow().getAvailableCopies(), is(0));
+        }
+
+        @Test
+        void whenABookIsNotInTheLibraryThenBorrowBookShouldReturnFalse() {
+            assertThat(library.borrowBook(aBookWithOneCopy.getIsbn()), is(false));
+        }
+    }
+
+    @Nested
+    class ReturnBook {
+        @Test
+        void whenABookIsInTheLibraryThenReturnBookShouldIncreaseAvailableCopiesByOne() {
+            library.addBook(aBookWithOneCopy);
+
+            assertThat(library.returnBook(aBookWithOneCopy.getIsbn()), is(true));
+
+            assertThat(library.findBookByISBN(aBookWithOneCopy.getIsbn()).orElseThrow().getAvailableCopies(), is(2));
+        }
+
+        @Test
+        void whenABookIsNotInTheLibraryThenBorrowBookShouldReturnFalse() {
+            assertThat(library.returnBook(aBookWithOneCopy.getIsbn()), is(false));
         }
     }
 }

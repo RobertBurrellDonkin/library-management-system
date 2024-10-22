@@ -52,6 +52,20 @@ business logic TODO let's assume that the library should just reject.
 * Let's assume that the efficiency of searches like findBooksByAuthor are less important
 than simplicity and maintainability. We have the option of adding a front side cache to improve
 search performance later. We'll just use a filter.
+* Let's opt to keep the library code more readable and maintainable by making the Book domain 
+object thread safe. Book will need to be final to indicate that subclassing is not recommended.
+We could have opted for value objects and an internal implement but that would have added
+a lot of complexity. 
+  * Due to differences across hardware, not practical to create a unit test that reliable demonstrates
+  concurrency issues. We would need to augment the unit and integrate tests with end to end testing
+  on a like-live system. 
+  * For consistency with AtomicInteger, book will return the number of available copies
+* There is the question of the case of decrementing a book when it has no copies. Let's assume 
+that we should apply business logic to prevent borrowing books when there are no copies in the 
+library. 
+  * And domain logic that the number of available copies must be a positive integer or zero.
+* Borrow book will return a boolean for consistency. Need to think about behaviour when there are no copies. 
+Let's push on for now.
 
 
   

@@ -11,6 +11,14 @@ public class BookTestDataBuilder {
 
     private static final Random RANDOM = new Random();
 
+    public static Book createBookWithOneCopy() {
+        return someBook().withAvailableCopies(1).build();
+    }
+
+    public static Book createBookWithNoCopies() {
+        return someBook().withAvailableCopies(1).build();
+    }
+
     public static Book createRandomBookBy(String author) {
         return someBook().withAuthor(author).withIsbn("isbn-" + RANDOM.nextInt()).build();
     }
