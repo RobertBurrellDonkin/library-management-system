@@ -2,6 +2,7 @@ package name.robertburrelldonkin.library.services;
 
 import name.robertburrelldonkin.library.domain.Book;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -49,5 +50,15 @@ public class Library {
      */
     public Optional<Book> findBookByISBN(String isbn) {
         return Optional.ofNullable(books.get(isbn));
+    }
+
+    /**
+     * Finds all books in the library by the given author.
+     *
+     * @param author not null
+     * @return books in the library by the given author, otherwise empty
+     */
+    public List<Book> findBooksByAuthor(String author) {
+        return books.values().stream().filter(book -> author.equals(book.getAuthor())).toList();
     }
 }

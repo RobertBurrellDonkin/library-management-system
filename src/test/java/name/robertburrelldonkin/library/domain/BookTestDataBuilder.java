@@ -1,11 +1,20 @@
 package name.robertburrelldonkin.library.domain;
 
+import java.util.Random;
+
 import static name.robertburrelldonkin.library.domain.Book.aBook;
 
 /**
  * Test data builder pattern TODO
  */
 public class BookTestDataBuilder {
+
+    private static final Random RANDOM = new Random();
+
+    public static Book createRandomBookBy(String author) {
+        return someBook().withAuthor(author).withIsbn("isbn-" + RANDOM.nextInt()).build();
+    }
+
     public static Book createABook() {
         return someBook().build();
     }

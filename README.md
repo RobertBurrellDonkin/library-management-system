@@ -49,6 +49,9 @@ business logic TODO let's assume that the library should just reject.
   of validation. Consistency with Java collection leans towards returning a value.
   * Let's go with consistency for the moment.
 * For consistency with Java collections, removeBook will return a boolean
+* Let's assume that the efficiency of searches like findBooksByAuthor are less important
+than simplicity and maintainability. We have the option of adding a front side cache to improve
+search performance later. We'll just use a filter.
 
 
   

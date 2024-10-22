@@ -7,22 +7,25 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static name.robertburrelldonkin.library.domain.BookTestDataBuilder.someBook;
+import static name.robertburrelldonkin.library.domain.BookTestDataBuilder.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-
-import static name.robertburrelldonkin.library.domain.BookTestDataBuilder.createABook;
-import static org.junit.jupiter.api.Assertions.*;
 
 class LibraryTest {
 
     Library library;
     Book aBook;
+    Book aBookByAnAuthor;
+    Book anotherBookByAnAuthor;
+    Book aBookByAnotherAuthor;
 
     @BeforeEach
     void setUp() {
         library = new Library();
         aBook = createABook();
+        aBookByAnAuthor = createRandomBookBy("an-author");
+        anotherBookByAnAuthor = createRandomBookBy("an-author");
+        aBookByAnotherAuthor = createRandomBookBy("another-author");
     }
 
     @Nested
@@ -61,16 +64,40 @@ class LibraryTest {
 
     @Nested
     class FindBookByISBN {
-
         @Test
         void whenABookIsInTheLibraryThenFindBookByISBNShouldReturnTheBook() {
             library.addBook(aBook);
 
             assertThat(library.findBookByISBN(aBook.getIsbn()), is(Optional.of(aBook)));
         }
+
         @Test
         void whenABookIsNotInTheLibraryThenFindBookByISBNShouldReturnEmpty() {
             assertThat(library.findBookByISBN(aBook.getIsbn()), is(Optional.empty()));
+        }
+    }
+
+    @Nested
+    class FindBookByAuthor {
+        @Test
+        void whenABookIsInTheLibraryThenFindBookByAuthorShouldReturnTheBook() {
+            library.addBook(aBook);
+
+            assertThat(library.findBooksByAuthor(aBook.getAuthor()), contains(aBook));
+        }
+
+        @Test
+        void whenABookIsNotInTheLibraryThenFindBookByAuthorShouldReturnEmpty() {
+            assertThat(library.findBooksByAuthor(aBook.getAuthor()), empty());
+        }
+
+        @Test
+        void findBookByAuthorShouldReturnAllBooksByAuthorAndNoOthers() {
+            library.addBook(aBookByAnAuthor);
+            library.addBook(anotherBookByAnAuthor);
+            library.addBook(aBookByAnotherAuthor);
+
+            assertThat(library.findBooksByAuthor(aBookByAnAuthor.getAuthor()), containsInAnyOrder(aBookByAnAuthor, anotherBookByAnAuthor));
         }
     }
 }
