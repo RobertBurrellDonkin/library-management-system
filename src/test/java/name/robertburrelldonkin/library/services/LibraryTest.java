@@ -29,7 +29,7 @@ class LibraryTest {
     class AddBook {
         @Test
         void whenABookIsNotInTheLibraryThenAddBookShouldAddTheBookToTheLibrary() {
-            assertTrue(library.addBook(aBook));
+            assertThat(library.addBook(aBook), is(true));
 
             assertThat(library.findBookByISBN(aBook.getIsbn()), is(Optional.of(aBook)));
         }
@@ -38,7 +38,24 @@ class LibraryTest {
         void whenABookIsInTheLibraryThenAddBookShouldTheBookShouldNotBeAddedTwice() {
             library.addBook(aBook);
 
-            assertFalse(library.addBook(someBook().withIsbn(aBook.getIsbn()).build()));
+            assertThat(library.addBook(someBook().withIsbn(aBook.getIsbn()).build()), is(false));
+        }
+    }
+
+    @Nested
+    class RemoveBook {
+        @Test
+        void whenABookIsInTheLibraryThenRemoveBookShouldRemoveTheBookFromTheLibrary() {
+            library.addBook(aBook);
+
+            assertThat(library.removeBook(aBook.getIsbn()), is(true));
+
+            assertThat(library.findBookByISBN(aBook.getIsbn()), is(Optional.empty()));
+        }
+
+        @Test
+        void whenABookIsNotInTheLibraryThenRemoveBookShouldReturnFalse() {
+            assertThat(library.removeBook(aBook.getIsbn()), is(false));
         }
     }
 

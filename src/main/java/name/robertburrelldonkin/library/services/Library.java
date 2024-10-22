@@ -6,6 +6,9 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 /**
  * Thread safe library management service
  */
@@ -22,11 +25,21 @@ public class Library {
      * Adds a book to the library when it is not already present.
      *
      * @param book not null
-     * @return true when the book is not already in the library,
-     * false when the book is already in the library.
+     * @return true when the book is not already present in the library,
+     * false when the book is already present in the library.
      */
     public boolean addBook(Book book) {
-        return books.put(book.getIsbn(), book) == null;
+        return isNull(books.put(book.getIsbn(), book));
+    }
+
+    /**
+     * Removes a book from the library when it is present.
+     * @param isbn not null
+     * @return true when the book is already present in the library,
+     * false when the book is not already present in the library.
+     */
+    public boolean removeBook(String isbn) {
+        return nonNull(books.remove(isbn));
     }
 
     /**

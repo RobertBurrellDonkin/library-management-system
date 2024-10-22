@@ -48,6 +48,7 @@ business logic TODO let's assume that the library should just reject.
   * Java Set return a value from add, whilst throwing an IllegalArgumentException in the case
   of validation. Consistency with Java collection leans towards returning a value.
   * Let's go with consistency for the moment.
+* For consistency with Java collections, removeBook will return a boolean
 
 
   
