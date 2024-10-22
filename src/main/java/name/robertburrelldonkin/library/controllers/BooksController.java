@@ -5,6 +5,8 @@ import name.robertburrelldonkin.library.services.LibraryManagementService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static org.springframework.http.HttpStatus.*;
 
 @RestController
@@ -54,5 +56,17 @@ public class BooksController {
                 .findBookByISBN(isbn)
                 .map(book -> new ResponseEntity<>(book, OK))
                 .orElse(new ResponseEntity<>(NOT_FOUND));
+    }
+
+    /**
+     * Searches for books in the library by an author.
+     *
+     * @param author not null
+     * @return list of books associated with the given author
+     */
+    @GetMapping()
+    public List<Book> findBookByAuthor(@RequestParam("author") String author) {
+        return libraryManagementService.findBooksByAuthor(author);
+
     }
 }

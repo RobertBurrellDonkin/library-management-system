@@ -2,7 +2,6 @@ package name.robertburrelldonkin.library.controllers;
 
 import name.robertburrelldonkin.library.domain.Book;
 import name.robertburrelldonkin.library.services.LibraryManagementService;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.Optional;
 
 import static name.robertburrelldonkin.library.domain.Book.aBook;
@@ -18,7 +18,6 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -144,6 +143,47 @@ class BooksControllerTest {
 
             verify(libraryManagementService).findBookByISBN("some-isbn");
 
+        }
+    }
+
+    @Nested
+    class FindBookByAuthor {
+
+        final Book book = aBook()
+                .withIsbn("some-isbn")
+                .withTitle("some-title")
+                .withAuthor("some-author")
+                .withPublicationYear(2001)
+                .withAvailableCopies(4)
+                .build();
+
+        @Test
+        void whenNoBooksHaveGivenAuthor() throws Exception {
+            when(libraryManagementService.findBooksByAuthor("some-author")).thenReturn(List.of());
+
+            mvc.perform(get("/api/books")
+                            .queryParam("author", "some-author"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$", hasSize(0)));
+
+            verify(libraryManagementService).findBooksByAuthor("some-author");
+        }
+
+        @Test
+        void whenBooksHaveGivenAuthor() throws Exception {
+            when(libraryManagementService.findBooksByAuthor("some-author")).thenReturn(List.of(book));
+
+            mvc.perform(get("/api/books")
+                            .queryParam("author", "some-author"))
+                    .andExpect(jsonPath("$", hasSize(1)))
+                    .andExpect(jsonPath("$[0].isbn", is("some-isbn")))
+                    .andExpect(jsonPath("$[0].title", is("some-title")))
+                    .andExpect(jsonPath("$[0].author", is("some-author")))
+                    .andExpect(jsonPath("$[0].publicationYear", is(2001)))
+                    .andExpect(jsonPath("$[0].availableCopies", is(4)))
+                    .andExpect(status().isOk());
+
+            verify(libraryManagementService).findBooksByAuthor("some-author");
         }
     }
 }

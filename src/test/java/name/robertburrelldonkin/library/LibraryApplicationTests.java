@@ -66,6 +66,25 @@ class LibraryApplicationTests {
                         }
                         """);
 
+        webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/books")
+                        .queryParam("author", "some-author")
+                        .build())
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .json("""
+                        [{
+                          "isbn": "some-isbn",
+                          "title": "some-title",
+                          "author": "some-author",
+                          "publicationYear": 2001,
+                          "availableCopies": 4
+                        }]
+                        """);
+
         webClient.delete()
                 .uri("/api/books/some-isbn")
                 .exchange()

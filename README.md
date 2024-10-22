@@ -88,7 +88,8 @@ we're asked for frequently accessed books.
    * There isn't a clear consensus around the right HTTP status code to return when a resource already exist,
    Let's return 409. 
  * DELETE -> ok or not found
-
+ * Let's consider find by author to be a search for a resource uniquely indexed by ISBN. This will
+return a list of books. 
 
   
 
