@@ -15,12 +15,16 @@ public class BookTestDataBuilder {
         return someBook().withAvailableCopies(1).build();
     }
 
-    public static Book createBookWithNoCopies() {
-        return someBook().withAvailableCopies(1).build();
+    public static Book createRandomBookBy(String author) {
+        return randomBook().withAuthor(author).build();
     }
 
-    public static Book createRandomBookBy(String author) {
-        return someBook().withAuthor(author).withIsbn("isbn-" + RANDOM.nextInt()).build();
+    public static Book createRandomBook() {
+        return randomBook().build();
+    }
+
+    private static Book.Builder randomBook() {
+        return someBook().withIsbn("isbn-" + RANDOM.nextInt());
     }
 
     public static Book createABook() {

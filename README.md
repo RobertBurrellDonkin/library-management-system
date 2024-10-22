@@ -69,7 +69,19 @@ Let's push on for now.
 * If we want to be able to apply business logic around borrowing, we'll need to stop the internal 
 representation escaping. So we'll need to switch a record and an internal representation.
 * Before pushing on to create a cache, let's extract an interface. 
-
+* Maintain even a simple cache of limited size imposes costs, especially when concurrency is 
+considered. The most reasonable assumption is that books will be added and remove, borrowed and returned 
+relatively infrequently, and that findByISBN is quick. We'll cache search results in a map and
+invalidate. Provided that we synchronize, we can build a simple LRU cache based on LinkedHashMap.
+ * Let's separate concerns around invalidation logic from the actual cache by using an interface.
+ * This is going to be tricky, since we need to invalidate based on isbn but we search on author.
+ * 
+* A front side cache for searches is an interesting problem but on reading more carefully, 
+we're asked for frequently accessed books. 
+  * Let's accept that searches will be slow but that's an interest problem. Let's assume that
+  it's just findByISbn that should be cached. This simplifies the logic.
+  * We could perhaps add books returned by search but that seems like adding complexity without
+  compelling reason.
 
   
 
