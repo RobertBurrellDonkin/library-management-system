@@ -1,5 +1,7 @@
 package name.robertburrelldonkin.library.domain;
 
+import java.util.Objects;
+
 public final class Book {
 
     public static Builder aBook() {
@@ -12,11 +14,11 @@ public final class Book {
     private final int publicationYear;
     private final int availableCopies;
 
-    private Book(String isbn,
-                 String title,
-                 String author,
-                 int publicationYear,
-                 int availableCopies) {
+    private Book(final String isbn,
+                 final String title,
+                 final String author,
+                 final int publicationYear,
+                 final int availableCopies) {
         this.isbn = isbn;
         this.title = title;
         this.author = author;
@@ -42,6 +44,18 @@ public final class Book {
 
     public int getAvailableCopies() {
         return availableCopies;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Book book)) return false;
+        return Objects.equals(getIsbn(), book.getIsbn());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(getIsbn());
     }
 
     @Override
