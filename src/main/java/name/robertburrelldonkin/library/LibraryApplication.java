@@ -1,6 +1,7 @@
 package name.robertburrelldonkin.library;
 
 import name.robertburrelldonkin.library.caches.LeastRecentlyUsedBookCache;
+import name.robertburrelldonkin.library.interceptors.RateLimitingHandlerInterceptor;
 import name.robertburrelldonkin.library.services.CachingLibraryManagementService;
 import name.robertburrelldonkin.library.services.Library;
 import name.robertburrelldonkin.library.services.LibraryManagementService;
@@ -10,11 +11,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @SpringBootApplication
-public class LibraryApplication {
+public class LibraryApplication implements WebMvcConfigurer {
 
 	public static void main(String[] args) {
 		SpringApplication.run(LibraryApplication.class, args);
@@ -41,5 +44,11 @@ public class LibraryApplication {
 										.permitAll())
 				.csrf(AbstractHttpConfigurer::disable);
 		return http.build();
+	}
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		// TODO externalise configuration
+		registry.addInterceptor(new RateLimitingHandlerInterceptor(1)).addPathPatterns("/api/books");
 	}
 }
