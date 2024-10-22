@@ -1,4 +1,4 @@
-package name.robertburrelldonkin.library.services;
+package name.robertburrelldonkin.library.caches;
 
 import name.robertburrelldonkin.library.domain.Book;
 
