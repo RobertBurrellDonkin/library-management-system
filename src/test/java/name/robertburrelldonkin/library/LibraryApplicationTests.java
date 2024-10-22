@@ -107,6 +107,27 @@ class LibraryApplicationTests {
                         }
                         """);
 
+        webClient.post()
+                .uri("/api/books/some-isbn/return")
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        webClient.get()
+                .uri("/api/books/some-isbn")
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .json("""
+                        {
+                          "isbn": "some-isbn",
+                          "title": "some-title",
+                          "author": "some-author",
+                          "publicationYear": 2001,
+                          "availableCopies": 4
+                        }
+                        """);
 
         webClient.delete()
                 .uri("/api/books/some-isbn")

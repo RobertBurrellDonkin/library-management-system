@@ -211,4 +211,27 @@ class BooksControllerTest {
         }
     }
 
+    @Nested
+    class ReturnBook {
+
+        @Test
+        void whenBookIsNotPresent() throws Exception {
+            when(libraryManagementService.returnBook("some-isbn")).thenReturn(false);
+
+            mvc.perform(post("/api/books/some-isbn/return"))
+                    .andExpect(status().isNotFound());
+
+            verify(libraryManagementService).returnBook("some-isbn");
+        }
+
+        @Test
+        void whenBookIsPresent() throws Exception {
+            when(libraryManagementService.returnBook("some-isbn")).thenReturn(true);
+
+            mvc.perform(post("/api/books/some-isbn/return"))
+                    .andExpect(status().isOk());
+
+            verify(libraryManagementService).returnBook("some-isbn");
+        }
+    }
 }

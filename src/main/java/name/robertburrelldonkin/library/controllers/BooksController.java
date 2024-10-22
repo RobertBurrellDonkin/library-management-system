@@ -82,4 +82,16 @@ public class BooksController {
         return new ResponseEntity<>(libraryManagementService.borrowBook(isbn) ? OK : NOT_FOUND);
     }
 
+    /**
+     * Returns a book from the library.
+     *
+     * @param isbn not null
+     * @return 200 when the book has been successfully returned,
+     * 404 when a book with the given isbn is not in the library
+     */
+    @PostMapping("/{isbn}/return")
+    public ResponseEntity<String> returnBook(@PathVariable String isbn) {
+        return new ResponseEntity<>(libraryManagementService.returnBook(isbn) ? OK : NOT_FOUND);
+    }
+
 }
