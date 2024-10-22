@@ -68,6 +68,7 @@ library.
 Let's push on for now.
 * If we want to be able to apply business logic around borrowing, we'll need to stop the internal 
 representation escaping. So we'll need to switch a record and an internal representation.
+* Before pushing on to create a cache, let's extract an interface. 
 
 
   

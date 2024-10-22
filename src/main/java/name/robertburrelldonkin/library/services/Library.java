@@ -15,7 +15,7 @@ import static name.robertburrelldonkin.library.domain.Book.aBook;
 /**
  * Thread safe library management service.
  */
-public class Library {
+public class Library implements LibraryManagementService {
 
     /**
      * Books indexed by unique ISBN.
@@ -24,44 +24,23 @@ public class Library {
      */
     private final ConcurrentMap<String, LibraryBook> books = new ConcurrentSkipListMap<>();
 
-    /**
-     * Adds a book to the library when it is not already present.
-     *
-     * @param book not null
-     * @return true when the book is not already present in the library,
-     * false when the book is already present in the library.
-     */
+    @Override
     public boolean addBook(Book book) {
         return isNull(books.put(book.isbn(), toLibraryBook(book)));
     }
 
-    /**
-     * Removes a book from the library when it is present.
-     *
-     * @param isbn not null
-     * @return true when the book is already present in the library,
-     * false when the book is not already present in the library.
-     */
+    @Override
     public boolean removeBook(String isbn) {
         return nonNull(books.remove(isbn));
     }
 
-    /**
-     * Finds a book by unique ISBN.
-     *
-     * @param isbn not null
-     * @return the book when it is in the library, otherwise empty.
-     */
+    @Override
     public Optional<Book> findBookByISBN(String isbn) {
         return Optional.ofNullable(books.get(isbn)).map(this::toBook);
     }
 
-    /**
-     * Finds all books in the library by the given author.
-     *
-     * @param author not null
-     * @return books in the library by the given author, otherwise empty
-     */
+
+    @Override
     public List<Book> findBooksByAuthor(String author) {
         return books.values().stream()
                 .filter(book -> author.equals(book.author()))
@@ -69,26 +48,14 @@ public class Library {
                 .toList();
     }
 
-    /**
-     * Borrows a book, decreasing the available copies by one.
-     *
-     * @param isbn not null
-     * @return true when a book with the given ISBN is present in the library,
-     * false otherwise
-     */
+    @Override
     public boolean borrowBook(String isbn) {
         final var bookByISBN = Optional.ofNullable(books.get(isbn));
         bookByISBN.ifPresent(libraryBook -> libraryBook.availableCopies.decrementAndGet());
         return bookByISBN.isPresent();
     }
 
-    /**
-     * Returns a book, incrementing the available copies by one.
-     *
-     * @param isbn not null
-     * @return true when a book with the given ISBN is present in the library,
-     * false otherwise
-     */
+    @Override
     public boolean returnBook(String isbn) {
         final var bookByISBN = Optional.ofNullable(books.get(isbn));
         bookByISBN.ifPresent(libraryBook -> libraryBook.availableCopies.incrementAndGet());
