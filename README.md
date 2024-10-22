@@ -90,6 +90,17 @@ we're asked for frequently accessed books.
  * DELETE -> ok or not found
  * Let's consider find by author to be a search for a resource uniquely indexed by ISBN. This will
 return a list of books. 
+ * borrowBook and returnBook are operations performed on a resource which have no easy mapping to 
+to CRUD verbs. 
+   * PATCH isn't really suitable since we're just asking for an update
+   * The results really isn't cachable and isn't idempotent
+   * Probably best modelled as a POST. One option might be to use JSON but the data model
+   doesn't seem rich enough to justify the extra complexity of a JSON model.
+   * Let's assume that a POSTing to path param is reasonable
+   * From an APi perspective, it feels like the client may really want the current book 
+   details, and perhaps that the updated details should be returned in the body.
+   We'll keep the API simple for now, though.
+   
 
   
 

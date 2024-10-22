@@ -186,4 +186,29 @@ class BooksControllerTest {
             verify(libraryManagementService).findBooksByAuthor("some-author");
         }
     }
+
+    @Nested
+    class BorrowBook {
+
+        @Test
+        void whenBookIsNotPresent() throws Exception {
+            when(libraryManagementService.borrowBook("some-isbn")).thenReturn(false);
+
+            mvc.perform(post("/api/books/some-isbn/borrow"))
+                    .andExpect(status().isNotFound());
+
+            verify(libraryManagementService).borrowBook("some-isbn");
+        }
+
+        @Test
+        void whenBookIsPresent() throws Exception {
+            when(libraryManagementService.borrowBook("some-isbn")).thenReturn(true);
+
+            mvc.perform(post("/api/books/some-isbn/borrow"))
+                    .andExpect(status().isOk());
+
+            verify(libraryManagementService).borrowBook("some-isbn");
+        }
+    }
+
 }
