@@ -27,7 +27,7 @@ class LibraryApplicationTests {
     }
 
     @Test
-    void endToEnd() {
+    void endToEndRoundTrip() {
         webClient.post()
                 .uri("/api/books")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -43,5 +43,11 @@ class LibraryApplicationTests {
                 .exchange()
                 .expectStatus()
                 .isCreated();
+
+        webClient.delete()
+                .uri("/api/books/some-isbn")
+                .exchange()
+                .expectStatus()
+                .isOk();
     }
 }

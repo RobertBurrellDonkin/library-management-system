@@ -13,6 +13,7 @@ import static name.robertburrelldonkin.library.domain.Book.aBook;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -49,7 +50,6 @@ class BooksControllerTest {
         void whenBookIsNotPresent() throws Exception {
             when(libraryManagementService.addBook(book)).thenReturn(true);
 
-
             mvc.perform(
                             post("/api/books")
                                     .contentType(APPLICATION_JSON)
@@ -77,6 +77,29 @@ class BooksControllerTest {
                     .andExpect(status().isConflict());
 
             verify(libraryManagementService).addBook(book);
+        }
+    }
+
+    @Nested
+    class RemoveBook {
+        @Test
+        void whenBookIsNotPresent() throws Exception {
+            when(libraryManagementService.removeBook("some-isbn")).thenReturn(true);
+
+            mvc.perform(delete("/api/books/some-isbn"))
+                    .andExpect(status().isOk());
+
+            verify(libraryManagementService).removeBook("some-isbn");
+        }
+
+        @Test
+        void whenBookIsPresent() throws Exception {
+            when(libraryManagementService.removeBook("some-isbn")).thenReturn(false);
+
+            mvc.perform(delete("/api/books/some-isbn"))
+                    .andExpect(status().isNotFound());
+
+            verify(libraryManagementService).removeBook("some-isbn");
         }
     }
 }

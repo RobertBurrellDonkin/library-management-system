@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.CONFLICT;
-import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/api/books")
@@ -33,5 +32,19 @@ public class BooksController {
     @ResponseStatus(code = CREATED)
     public ResponseEntity<String> addBook(@RequestBody Book book) {
         return new ResponseEntity<>(libraryManagementService.addBook(book) ? CREATED : CONFLICT);
+    }
+
+    /**
+     * Removes a book from the library.
+     *
+     * @param isbn not null
+     * @return
+     * 200 when the book has been successfully removed,
+     * 404 when a book with the given isbn is not in the library
+     */
+    @DeleteMapping("/{isbn}")
+    @ResponseStatus(code = CREATED)
+    public ResponseEntity<String> removeBook(@PathVariable String isbn) {
+        return new ResponseEntity<>(libraryManagementService.removeBook(isbn) ? OK : NOT_FOUND);
     }
 }
