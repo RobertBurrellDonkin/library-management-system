@@ -5,7 +5,7 @@ import name.robertburrelldonkin.library.domain.Book;
 
 import java.util.Optional;
 
-public class CachingLibraryManagementService extends DelegateLibraryManagementService {
+public class CachingLibraryManagementService extends AbstractDelegateLibraryManagementService {
 
     private final BookCache bookCache;
     public CachingLibraryManagementService(LibraryManagementService delegate, BookCache bookCache) {
