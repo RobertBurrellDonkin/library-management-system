@@ -14,22 +14,15 @@ import static org.hamcrest.Matchers.*;
 class LibraryTest {
 
     Library library;
-    Book aBook;
-    Book aBookByAnAuthor;
-    Book anotherBookByAnAuthor;
-    Book aBookByAnotherAuthor;
-    Book aBookWithOneCopy;
-    Book aBookWithNoCopies;
+    Book aBook = createABook();
+    Book aBookByAnAuthor = createRandomBookBy("an-author");
+    Book anotherBookByAnAuthor = createRandomBookBy("an-author");
+    Book aBookByAnotherAuthor = createRandomBookBy("another-author");
+    Book aBookWithOneCopy = createBookWithOneCopy();
 
     @BeforeEach
     void setUp() {
         library = new Library();
-        aBook = createABook();
-        aBookByAnAuthor = createRandomBookBy("an-author");
-        anotherBookByAnAuthor = createRandomBookBy("an-author");
-        aBookByAnotherAuthor = createRandomBookBy("another-author");
-        aBookWithOneCopy = createBookWithOneCopy();
-        aBookWithNoCopies = createBookWithNoCopies();
     }
 
     @Nested
