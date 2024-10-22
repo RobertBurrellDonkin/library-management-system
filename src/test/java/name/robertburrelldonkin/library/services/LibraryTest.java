@@ -41,4 +41,19 @@ class LibraryTest {
             assertFalse(library.addBook(someBook().withIsbn(aBook.getIsbn()).build()));
         }
     }
+
+    @Nested
+    class FindBookByISBN {
+
+        @Test
+        void whenABookIsInTheLibraryThenFindBookByISBNShouldReturnTheBook() {
+            library.addBook(aBook);
+
+            assertThat(library.findBookByISBN(aBook.getIsbn()), is(Optional.of(aBook)));
+        }
+        @Test
+        void whenABookIsNotInTheLibraryThenFindBookByISBNShouldReturnEmpty() {
+            assertThat(library.findBookByISBN(aBook.getIsbn()), is(Optional.empty()));
+        }
+    }
 }
