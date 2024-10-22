@@ -38,14 +38,14 @@ class LibraryTest {
         void whenABookIsNotInTheLibraryThenAddBookShouldAddTheBookToTheLibrary() {
             assertThat(library.addBook(aBook), is(true));
 
-            assertThat(library.findBookByISBN(aBook.getIsbn()), is(Optional.of(aBook)));
+            assertThat(library.findBookByISBN(aBook.isbn()), is(Optional.of(aBook)));
         }
 
         @Test
         void whenABookIsInTheLibraryThenAddBookShouldTheBookShouldNotBeAddedTwice() {
             library.addBook(aBook);
 
-            assertThat(library.addBook(someBook().withIsbn(aBook.getIsbn()).build()), is(false));
+            assertThat(library.addBook(someBook().withIsbn(aBook.isbn()).build()), is(false));
         }
     }
 
@@ -55,14 +55,14 @@ class LibraryTest {
         void whenABookIsInTheLibraryThenRemoveBookShouldRemoveTheBookFromTheLibrary() {
             library.addBook(aBook);
 
-            assertThat(library.removeBook(aBook.getIsbn()), is(true));
+            assertThat(library.removeBook(aBook.isbn()), is(true));
 
-            assertThat(library.findBookByISBN(aBook.getIsbn()), is(Optional.empty()));
+            assertThat(library.findBookByISBN(aBook.isbn()), is(Optional.empty()));
         }
 
         @Test
         void whenABookIsNotInTheLibraryThenRemoveBookShouldReturnFalse() {
-            assertThat(library.removeBook(aBook.getIsbn()), is(false));
+            assertThat(library.removeBook(aBook.isbn()), is(false));
         }
     }
 
@@ -72,12 +72,12 @@ class LibraryTest {
         void whenABookIsInTheLibraryThenFindBookByISBNShouldReturnTheBook() {
             library.addBook(aBook);
 
-            assertThat(library.findBookByISBN(aBook.getIsbn()), is(Optional.of(aBook)));
+            assertThat(library.findBookByISBN(aBook.isbn()), is(Optional.of(aBook)));
         }
 
         @Test
         void whenABookIsNotInTheLibraryThenFindBookByISBNShouldReturnEmpty() {
-            assertThat(library.findBookByISBN(aBook.getIsbn()), is(Optional.empty()));
+            assertThat(library.findBookByISBN(aBook.isbn()), is(Optional.empty()));
         }
     }
 
@@ -87,12 +87,12 @@ class LibraryTest {
         void whenABookIsInTheLibraryThenFindBookByAuthorShouldReturnTheBook() {
             library.addBook(aBook);
 
-            assertThat(library.findBooksByAuthor(aBook.getAuthor()), contains(aBook));
+            assertThat(library.findBooksByAuthor(aBook.author()), contains(aBook));
         }
 
         @Test
         void whenABookIsNotInTheLibraryThenFindBookByAuthorShouldReturnEmpty() {
-            assertThat(library.findBooksByAuthor(aBook.getAuthor()), empty());
+            assertThat(library.findBooksByAuthor(aBook.author()), empty());
         }
 
         @Test
@@ -101,7 +101,7 @@ class LibraryTest {
             library.addBook(anotherBookByAnAuthor);
             library.addBook(aBookByAnotherAuthor);
 
-            assertThat(library.findBooksByAuthor(aBookByAnAuthor.getAuthor()), containsInAnyOrder(aBookByAnAuthor, anotherBookByAnAuthor));
+            assertThat(library.findBooksByAuthor(aBookByAnAuthor.author()), containsInAnyOrder(aBookByAnAuthor, anotherBookByAnAuthor));
         }
     }
 
@@ -111,14 +111,14 @@ class LibraryTest {
         void whenABookIsInTheLibraryThenBorrowBookShouldDecreaseAvailableCopiesByOne() {
             library.addBook(aBookWithOneCopy);
 
-            assertThat(library.borrowBook(aBookWithOneCopy.getIsbn()), is(true));
+            assertThat(library.borrowBook(aBookWithOneCopy.isbn()), is(true));
 
-            assertThat(library.findBookByISBN(aBookWithOneCopy.getIsbn()).orElseThrow().getAvailableCopies(), is(0));
+            assertThat(library.findBookByISBN(aBookWithOneCopy.isbn()).orElseThrow().availableCopies(), is(0));
         }
 
         @Test
         void whenABookIsNotInTheLibraryThenBorrowBookShouldReturnFalse() {
-            assertThat(library.borrowBook(aBookWithOneCopy.getIsbn()), is(false));
+            assertThat(library.borrowBook(aBookWithOneCopy.isbn()), is(false));
         }
     }
 
@@ -128,14 +128,14 @@ class LibraryTest {
         void whenABookIsInTheLibraryThenReturnBookShouldIncreaseAvailableCopiesByOne() {
             library.addBook(aBookWithOneCopy);
 
-            assertThat(library.returnBook(aBookWithOneCopy.getIsbn()), is(true));
+            assertThat(library.returnBook(aBookWithOneCopy.isbn()), is(true));
 
-            assertThat(library.findBookByISBN(aBookWithOneCopy.getIsbn()).orElseThrow().getAvailableCopies(), is(2));
+            assertThat(library.findBookByISBN(aBookWithOneCopy.isbn()).orElseThrow().availableCopies(), is(2));
         }
 
         @Test
         void whenABookIsNotInTheLibraryThenBorrowBookShouldReturnFalse() {
-            assertThat(library.returnBook(aBookWithOneCopy.getIsbn()), is(false));
+            assertThat(library.returnBook(aBookWithOneCopy.isbn()), is(false));
         }
     }
 }

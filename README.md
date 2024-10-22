@@ -66,6 +66,8 @@ library.
   * And domain logic that the number of available copies must be a positive integer or zero.
 * Borrow book will return a boolean for consistency. Need to think about behaviour when there are no copies. 
 Let's push on for now.
+* If we want to be able to apply business logic around borrowing, we'll need to stop the internal 
+representation escaping. So we'll need to switch a record and an internal representation.
 
 
   
