@@ -107,14 +107,27 @@ to CRUD verbs.
   * We could limit the endpoints indirectly by rate limiting the services in this fashion but 
   a more direct approach would seem more natural.
   * Opt for a HandlerInterceptors for the end points until /api/books
-  * There are different ways rate limits might be accomplish but we'll opt for a RESTful
+  * There are different ways rate limits might be accomplished but we'll opt for a RESTful
   approach and return an appropriate HTTP code when the rate is beyond the limit.
   * Thinking about what we are limiting, there are several reasonable interpretations 
     * we could limit the number of concurrent requests in flight
     * or limit the number of requests within a time period
   * Limiting concurrent requests protects the but is more friendly to clients. Let's assume that 
   billing isn't related to rate limiting and limit concurrent requests.
-  * 
+* Good security design requires knowledge, both of the technologies and the context. A production
+standard JWT implementation would rest on a lot of assumptions. 
+  * Let's assume that this API will be accessed by other microservices who will bwe able to mint tokens either 
+  directly for example by a service like Amazon Cognito or by passing through. 
+    * JWT could be passed via a cookie, but we'll opt for a header since this is usually more
+    natural for microservice to microservice calls. 
+    * We'll parse the token and check for a claim about the subject (sub). If this is present,
+    we'll check using a simple interface whether this subject is allowed access. 
+    * Let's assume that only a handful of microservices are authorised. So we'll externalise
+      the configuration. For larger numbers of subjects, we'd probably opt for a data store or
+      a dedicated identity federator.
+    * There is also the question of algorithm and key. Public/private key cryptography is 
+    the more robust solution. The public key is not confidential and could be safely 
+    externalised as part of the configuration.  
   
 
 
