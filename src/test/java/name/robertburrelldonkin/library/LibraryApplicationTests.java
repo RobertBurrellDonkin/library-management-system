@@ -28,6 +28,12 @@ class LibraryApplicationTests {
 
     @Test
     void endToEndRoundTrip() {
+        webClient.get()
+                .uri("/api/books/some-isbn")
+                .exchange()
+                .expectStatus()
+                .isNotFound();
+
         webClient.post()
                 .uri("/api/books")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -43,6 +49,12 @@ class LibraryApplicationTests {
                 .exchange()
                 .expectStatus()
                 .isCreated();
+
+        webClient.get()
+                .uri("/api/books/some-isbn")
+                .exchange()
+                .expectStatus()
+                .isOk();
 
         webClient.delete()
                 .uri("/api/books/some-isbn")

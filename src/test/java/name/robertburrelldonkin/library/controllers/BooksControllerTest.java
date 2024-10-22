@@ -2,6 +2,7 @@ package name.robertburrelldonkin.library.controllers;
 
 import name.robertburrelldonkin.library.domain.Book;
 import name.robertburrelldonkin.library.services.LibraryManagementService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +10,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Optional;
+
 import static name.robertburrelldonkin.library.domain.Book.aBook;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BooksController.class)
@@ -100,6 +106,44 @@ class BooksControllerTest {
                     .andExpect(status().isNotFound());
 
             verify(libraryManagementService).removeBook("some-isbn");
+        }
+    }
+
+    @Nested
+    class FindBookByIsbn {
+
+        final Book book = aBook()
+                .withIsbn("some-isbn")
+                .withTitle("some-title")
+                .withAuthor("some-author")
+                .withPublicationYear(2001)
+                .withAvailableCopies(4)
+                .build();
+
+        @Test
+        void whenBookIsNotPresent() throws Exception {
+            when(libraryManagementService.findBookByISBN("some-isbn")).thenReturn(Optional.empty());
+
+            mvc.perform(get("/api/books/some-isbn"))
+                    .andExpect(status().isNotFound());
+
+            verify(libraryManagementService).findBookByISBN("some-isbn");
+        }
+
+        @Test
+        void whenBookIsPresent() throws Exception {
+            when(libraryManagementService.findBookByISBN("some-isbn")).thenReturn(Optional.of(book));
+
+            mvc.perform(get("/api/books/some-isbn"))
+                    .andExpect(jsonPath("$.isbn", is("some-isbn")))
+                    .andExpect(jsonPath("$.title", is("some-title")))
+                    .andExpect(jsonPath("$.author", is("some-author")))
+                    .andExpect(jsonPath("$.publicationYear", is(2001)))
+                    .andExpect(jsonPath("$.availableCopies", is(4)))
+                    .andExpect(status().isOk());
+
+            verify(libraryManagementService).findBookByISBN("some-isbn");
+
         }
     }
 }

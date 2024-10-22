@@ -87,6 +87,8 @@ we're asked for frequently accessed books.
  * POST -> created 
    * There isn't a clear consensus around the right HTTP status code to return when a resource already exist,
    Let's return 409. 
+ * DELETE -> ok or not found
+
 
   
 
