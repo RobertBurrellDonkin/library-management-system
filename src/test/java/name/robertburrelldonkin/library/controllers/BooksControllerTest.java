@@ -195,7 +195,7 @@ class BooksControllerTest {
                                                       "author": "some-author",
                                                       "publicationYear": 2001,
                                                       "availableCopies":-1
-                                                    }                                                    
+                                                    }
                                                     """))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.availableCopies", is("availableCopies must be positive")))
@@ -218,7 +218,7 @@ class BooksControllerTest {
                                                       "author": "some-author",
                                                       "publicationYear": 2001,
                                                       "availableCopies":0
-                                                    }                                                    
+                                                    }
                                                     """))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.availableCopies", is("availableCopies must be positive")))
