@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import name.robertburrelldonkin.library.domain.Book;
 import name.robertburrelldonkin.library.services.LibraryManagementService;
 import name.robertburrelldonkin.library.services.NoAvailableCopiesException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;

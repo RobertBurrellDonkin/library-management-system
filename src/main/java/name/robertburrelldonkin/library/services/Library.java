@@ -66,7 +66,7 @@ public class Library implements LibraryManagementService {
     private void decrementAvailableCopies(LibraryBook libraryBook) throws NoAvailableCopiesException {
         // We loop until the value of available copies is unchanged during our validation check
         var success = false;
-        while(!success) {
+        while (!success) {
             final var availableCopies = libraryBook.availableCopies.get();
             // validation check
             if (availableCopies <= 0) {

@@ -373,7 +373,7 @@ class BooksControllerTest {
             mvc.perform(post("/api/books/some-isbn/borrow"))
                     .andExpect(status().isConflict())
                     .andExpect(jsonPath("$.errorMessage", is("No copies available")))
-                    .andExpect(content().contentType(APPLICATION_JSON));;
+                    .andExpect(content().contentType(APPLICATION_JSON));
 
             verify(libraryManagementService).borrowBook("some-isbn");
         }
