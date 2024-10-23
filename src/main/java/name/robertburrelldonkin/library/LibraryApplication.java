@@ -5,6 +5,7 @@ import name.robertburrelldonkin.library.interceptors.RateLimitingHandlerIntercep
 import name.robertburrelldonkin.library.services.CachingLibraryManagementService;
 import name.robertburrelldonkin.library.services.Library;
 import name.robertburrelldonkin.library.services.LibraryManagementService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -23,14 +24,30 @@ public class LibraryApplication implements WebMvcConfigurer {
 		SpringApplication.run(LibraryApplication.class, args);
 	}
 
+	/**
+	 * Rate limit for API endpoints.
+	 */
+	@Value("${app.api.max-concurrent-requests}")
+	private int maxConcurrentRequests;
+
+	/**
+	 * Least recently used cache for books.
+	 *
+	 * @param maxSize maximum number of books to be cached
+	 * @param initialCapacity capacity to allocate on startup
+	 * @param loadFactor indicates the load when cache capacity should be scaled up
+	 * @return the book cache, not null
+	 */
 	@Bean
-	public LeastRecentlyUsedBookCache cache() {
-		//TODO: externalise configuration
-		return new LeastRecentlyUsedBookCache(128, 24 , 0.75f);
+	public LeastRecentlyUsedBookCache cache(
+			@Value("${app.cache.books.max-size}") final int maxSize,
+			@Value("${app.cache.books.initial-capacity}") final int initialCapacity,
+			@Value("${app.cache.books.load-factor}") final float loadFactor) {
+		return new LeastRecentlyUsedBookCache(maxSize, initialCapacity, loadFactor);
 	}
 
 	@Bean
-	public LibraryManagementService libraryManagementService(LeastRecentlyUsedBookCache cache) {
+	public LibraryManagementService libraryManagementService(final LeastRecentlyUsedBookCache cache) {
 		return new CachingLibraryManagementService(new Library(), cache);
 	}
 
@@ -48,7 +65,8 @@ public class LibraryApplication implements WebMvcConfigurer {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		// TODO externalise configuration
-		registry.addInterceptor(new RateLimitingHandlerInterceptor(1)).addPathPatterns("/api/books");
+		registry
+				.addInterceptor(new RateLimitingHandlerInterceptor(maxConcurrentRequests))
+				.addPathPatterns("/api/books");
 	}
 }

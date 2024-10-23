@@ -1,3 +1,12 @@
 spring:
   application:
     name: library
+
+app:
+  cache:
+    books:
+      max-size: 128
+      initial-capacity: 48
+      load-factor: 0.75
+  api:
+    max-concurrent-requests: 10

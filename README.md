@@ -133,7 +133,7 @@ standard JWT implementation would rest on a lot of assumptions.
   * There is also the question of testing, both manual and automated.
     * Profiles are likely to be an attractive option.
     * "jwt" and "unrestricted" profiles 
-  
+* I'll need to get around to documenting the configuration at some stage.
 
 
 

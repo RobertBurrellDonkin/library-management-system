@@ -12,8 +12,8 @@ public class RateLimitingHandlerInterceptor implements HandlerInterceptor {
 
     private final Semaphore semaphore;
 
-    public RateLimitingHandlerInterceptor(final int maxCurrentRequests) {
-        semaphore = new Semaphore(maxCurrentRequests);
+    public RateLimitingHandlerInterceptor(final int maxConcurrentRequests) {
+        semaphore = new Semaphore(maxConcurrentRequests);
     }
 
     @Override
