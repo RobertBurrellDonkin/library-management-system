@@ -206,8 +206,41 @@ where
 
 
 ### BorrowBook
+Decreases the available copies of a book by 1.
+
+```plaintext
+POST /api/books/{isbn}/borrow
+```
+where
+* `{isbn}` is the ISBN of the book to be borrowed
+
+#### Success Response
+* **Status** `200 OK`
+* **Body** (empty)
+
+#### Error Responses
+##### Book Is Not In Library
+* **Status** `404 NOT FOUND`
+* **Body** (empty)
 
 ### ReturnBook
+
+Increased the available copies of a book by 1.
+
+```plaintext
+POST /api/books/{isbn}/return
+```
+where
+* `{isbn}` is the ISBN of the book to be borrowed
+
+#### Success Response
+* **Status** `200 OK`
+* **Body** (empty)
+
+#### Error Responses
+##### Book Is Not In Library
+* **Status** `404 NOT FOUND`
+* **Body** (empty)
 
 # Assumptions And Design Decisions
 
