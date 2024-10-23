@@ -7,7 +7,14 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
+import java.util.Date;
+
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.YEARS;
 
 public class JwtTokenBuilder {
 
@@ -24,6 +31,18 @@ public class JwtTokenBuilder {
         return Jwts
                 .builder()
                 .subject("admin")
+                .expiration(Date.from(Instant.now().plus(10, DAYS)))
+                .signWith(privateKey)
+                .compact();
+    }
+
+    public static String createAnExpiredToken() {
+        final var privateKey = getPrivateKey();
+
+        return Jwts
+                .builder()
+                .subject("admin")
+                .expiration(Date.from(Instant.now().minus(1, DAYS)))
                 .signWith(privateKey)
                 .compact();
     }

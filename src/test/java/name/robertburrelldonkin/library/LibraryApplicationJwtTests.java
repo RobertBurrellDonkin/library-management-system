@@ -16,6 +16,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
 import static name.robertburrelldonkin.library.authenticators.jwt.JwtTokenBuilder.createAValidToken;
+import static name.robertburrelldonkin.library.authenticators.jwt.JwtTokenBuilder.createAnExpiredToken;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
@@ -139,6 +140,63 @@ class LibraryApplicationJwtTests {
         void returnBookIsForbidden() {
             returnBook()
                     .header(AUTHORIZATION, "Bearer invalid")
+                    .exchange()
+                    .expectStatus()
+                    .isForbidden();
+        }
+    }
+
+    @Nested
+    class ExpiredToken {
+        @Test
+        void addBookIsForbidden() {
+            addBook()
+                    .header(AUTHORIZATION, "Bearer " + createAnExpiredToken())
+                    .exchange()
+                    .expectStatus()
+                    .isForbidden();
+        }
+
+        @Test
+        void removeBookIsForbidden() {
+            removeBook()
+                    .header(AUTHORIZATION, "Bearer " + createAnExpiredToken())
+                    .exchange()
+                    .expectStatus()
+                    .isForbidden();
+        }
+
+        @Test
+        void findBookByISBNsForbidden() {
+            findBookByISBN()
+                    .header(AUTHORIZATION, "Bearer " + createAnExpiredToken())
+                    .exchange()
+                    .expectStatus()
+                    .isForbidden();
+        }
+
+        @Test
+        void findBooksByAuthorIsForbidden() {
+            findBookByAuthor()
+                    .header(AUTHORIZATION, "Bearer " + createAnExpiredToken())
+                    .exchange()
+                    .expectStatus()
+                    .isForbidden();
+        }
+
+        @Test
+        void borrowBookIsForbidden() {
+            borrowBook()
+                    .header(AUTHORIZATION, "Bearer " + createAnExpiredToken())
+                    .exchange()
+                    .expectStatus()
+                    .isForbidden();
+        }
+
+        @Test
+        void returnBookIsForbidden() {
+            returnBook()
+                    .header(AUTHORIZATION, "Bearer " + createAnExpiredToken())
                     .exchange()
                     .expectStatus()
                     .isForbidden();
