@@ -136,6 +136,9 @@ standard JWT implementation would rest on a lot of assumptions.
 * I'll need to get around to documenting the configuration at some stage.
 * Added configuration property to switch auth on and off. Added no authentication profile to 
 allow manual and automated testing.
+* Some interesting design decisions around Jwt authenticator. Library now parser and validates in a single operation.
+So makes sense to inject the validation key. 
+  * I opted to use a domain object for readability.
 
 
 
