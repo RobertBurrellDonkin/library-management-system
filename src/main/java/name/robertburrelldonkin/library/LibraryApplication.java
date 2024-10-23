@@ -172,7 +172,7 @@ public class LibraryApplication implements WebMvcConfigurer {
                 .authorizeHttpRequests(
                         registry -> {
                             if (authentication) {
-                                logger.info("Enabling authentication");
+                                logger.info("Require requests to be authenticated.");
                                 // Note that authorization would be added at this point.
                                 // This exercise ends with authentication.
                                 // So we allow access to any principals bearing tokens
@@ -182,7 +182,7 @@ public class LibraryApplication implements WebMvcConfigurer {
                                 // This configuration is useful for manual and automated testing
                                 // where minting valid tokens may be inconvenient.
                                 // This should not be used in production.
-                                logger.info("Disabling authentication");
+                                logger.info("Allowing all requests");
                                 registry.anyRequest().permitAll();
                             }
                         });
