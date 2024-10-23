@@ -139,6 +139,9 @@ allow manual and automated testing.
 * Some interesting design decisions around Jwt authenticator. Library now parser and validates in a single operation.
 So makes sense to inject the validation key. 
   * I opted to use a domain object for readability.
+* The assumption is that isn't a user/password but a signed subject. This means we 
+  * In Spring Security terms, this is a PreAuthenticated scenario. Spring Security provides a little framework for 
+  scenarios such as this. Let's adopt it.
 
 
 
