@@ -10,6 +10,7 @@ import java.util.Optional;
 import static name.robertburrelldonkin.library.domain.BookTestDataBuilder.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class LibraryTest {
 
@@ -19,6 +20,7 @@ class LibraryTest {
     Book anotherBookByAnAuthor = createRandomBookBy("an-author");
     Book aBookByAnotherAuthor = createRandomBookBy("another-author");
     Book aBookWithOneCopy = createBookWithOneCopy();
+    Book aBookWithNoCopies = createBookWithNoCopies();
 
     @BeforeEach
     void setUp() {
@@ -105,6 +107,17 @@ class LibraryTest {
             library.addBook(aBookWithOneCopy);
 
             assertThat(library.borrowBook(aBookWithOneCopy.isbn()), is(true));
+
+            assertThat(library.findBookByISBN(aBookWithOneCopy.isbn()).orElseThrow().availableCopies(), is(0));
+        }
+
+        @Test
+        void whenABookIsInTheLibraryWithNoCopiesAvailableThenBorrowBookShouldThrowException() {
+            library.addBook(aBookWithNoCopies);
+
+            assertThrows(
+                    NoAvailableCopiesException.class,
+                    () -> library.borrowBook(aBookWithOneCopy.isbn()));
 
             assertThat(library.findBookByISBN(aBookWithOneCopy.isbn()).orElseThrow().availableCopies(), is(0));
         }

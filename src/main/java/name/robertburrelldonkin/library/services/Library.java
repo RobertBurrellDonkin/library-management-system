@@ -51,9 +51,33 @@ public class Library implements LibraryManagementService {
     @Override
     public boolean borrowBook(String isbn) {
         final var bookByISBN = Optional.ofNullable(books.get(isbn));
-        bookByISBN.ifPresent(libraryBook -> libraryBook.availableCopies.decrementAndGet());
+        bookByISBN.ifPresent(this::decrementAvailableCopies);
         return bookByISBN.isPresent();
     }
+
+    /**
+     * Decrements available copies using CAS approach.
+     * This is non-blocking approach to safely conditionally decrementing available copies.
+     * Avoids the need to lock.
+     *
+     * @param libraryBook not null
+     * @throws NoAvailableCopiesException if the available copies are zero at any stage
+     */
+    private void decrementAvailableCopies(LibraryBook libraryBook) throws NoAvailableCopiesException {
+        // We loop until the value of available copies is unchanged during our validation check
+        var success = false;
+        while(!success) {
+            final var availableCopies = libraryBook.availableCopies.get();
+            // validation check
+            if (availableCopies <= 0) {
+                throw new NoAvailableCopiesException();
+            }
+            // Decrement the copies available provided that the value has not changed since the prior read
+            // When the conditional decrement succeeds, exit the loop
+            success = libraryBook.availableCopies.compareAndSet(availableCopies, availableCopies - 1);
+        }
+    }
+
 
     @Override
     public boolean returnBook(String isbn) {

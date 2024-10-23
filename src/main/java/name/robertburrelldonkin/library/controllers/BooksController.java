@@ -3,6 +3,7 @@ package name.robertburrelldonkin.library.controllers;
 import jakarta.validation.Valid;
 import name.robertburrelldonkin.library.domain.Book;
 import name.robertburrelldonkin.library.services.LibraryManagementService;
+import name.robertburrelldonkin.library.services.NoAvailableCopiesException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -99,7 +100,7 @@ public class BooksController {
         return new ResponseEntity<>(libraryManagementService.returnBook(isbn) ? OK : NOT_FOUND);
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(value = BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException methodArgumentNotValidException) {
         final Map<String, String> errors = new HashMap<>();
@@ -114,5 +115,11 @@ public class BooksController {
                     errors.put(globalError.getObjectName(), globalError.getDefaultMessage());
                 });
         return errors;
+    }
+
+    @ResponseStatus(CONFLICT)
+    @ExceptionHandler(NoAvailableCopiesException.class)
+    public Map<String, String> handleNoAvailableCopiesException(NoAvailableCopiesException noAvailableCopiesException) {
+        return Map.of("errorMessage", noAvailableCopiesException.getMessage());
     }
 }

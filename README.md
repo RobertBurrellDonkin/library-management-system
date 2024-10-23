@@ -222,6 +222,24 @@ where
 ##### Book Is Not In Library
 * **Status** `404 NOT FOUND`
 * **Body** (empty)
+* 
+##### No Available Copies
+* **Status** `409 CONFLICT`
+* **Body** JSON error message
+
+| Attribute           | Type   | Required | Description                | 
+|---------------------|--------|----------|----------------------------|
+| `errorMessage`      | string | Yes      | The nature of the conflict |
+
+
+  * **Example**
+```json
+{
+  "errorMessage":"No copies available"
+}
+```
+
+
 
 ### ReturnBook
 
@@ -405,6 +423,10 @@ TODO:
     * For production use,
     * Responsibility of the token provider to add expired. So won't check.
 * Let's assume all attributes are required and that available copies and publication year must be positive. 
+* 409 CONFLICT ->
+  * The client should GET the book before trying to borrow. If the book has been subsequently borrowed then the client 
+  state is in conflict with the server state. The client should retry the GET to discover when a copy has been returned/
+* TODO CAS approach for borrow 
 
 
   

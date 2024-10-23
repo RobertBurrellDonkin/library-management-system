@@ -46,8 +46,9 @@ public interface LibraryManagementService {
      * @param isbn not null
      * @return true when a book with the given ISBN is present in the library,
      * false otherwise
+     * @throws NoAvailableCopiesException when there are no copies available to borrow
      */
-    boolean borrowBook(String isbn);
+    boolean borrowBook(String isbn) throws NoAvailableCopiesException;
 
     /**
      * Returns a book, incrementing the available copies by one.

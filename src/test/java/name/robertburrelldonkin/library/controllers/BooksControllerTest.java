@@ -2,6 +2,7 @@ package name.robertburrelldonkin.library.controllers;
 
 import name.robertburrelldonkin.library.domain.Book;
 import name.robertburrelldonkin.library.services.LibraryManagementService;
+import name.robertburrelldonkin.library.services.NoAvailableCopiesException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -361,6 +362,18 @@ class BooksControllerTest {
 
             mvc.perform(post("/api/books/some-isbn/borrow"))
                     .andExpect(status().isOk());
+
+            verify(libraryManagementService).borrowBook("some-isbn");
+        }
+
+        @Test
+        void whenBookHasZeroAvailableCopies() throws Exception {
+            when(libraryManagementService.borrowBook("some-isbn")).thenThrow(new NoAvailableCopiesException());
+
+            mvc.perform(post("/api/books/some-isbn/borrow"))
+                    .andExpect(status().isConflict())
+                    .andExpect(jsonPath("$.errorMessage", is("No copies available")))
+                    .andExpect(content().contentType(APPLICATION_JSON));;
 
             verify(libraryManagementService).borrowBook("some-isbn");
         }

@@ -4,11 +4,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpStatus.CONFLICT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("insecure")
@@ -130,6 +132,36 @@ class LibraryApplicationTests {
                           "availableCopies": 4
                         }
                         """);
+
+        webClient.post()
+                .uri("/api/books/some-isbn/borrow")
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        webClient.post()
+                .uri("/api/books/some-isbn/borrow")
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        webClient.post()
+                .uri("/api/books/some-isbn/borrow")
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        webClient.post()
+                .uri("/api/books/some-isbn/borrow")
+                .exchange()
+                .expectStatus()
+                .isOk();
+
+        webClient.post()
+                .uri("/api/books/some-isbn/borrow")
+                .exchange()
+                .expectStatus()
+                .isEqualTo(CONFLICT);
 
         webClient.delete()
                 .uri("/api/books/some-isbn")
