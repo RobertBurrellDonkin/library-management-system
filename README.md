@@ -1,5 +1,22 @@
 # Library Management System with RESTful API
+## Overview
+A Spring Boot 3 microservice with both bonuses -
+ * Basic rate limiter based on concurrent request
+ * Simple JWT authentication based on Spring Security supporting tokens signed using asymmetric cryptography
 
+Assuming that the **Java 8+** specified includes later version and noting that
+ * Java 8 is now end of life, 
+ * has known security vulnerabilities, 
+ * and is not supported by SpringBoot 3
+
+this solution requires Java 17. It is expected to run on later versions but has only been tested on Java 17.
+
+## How To Run
+
+
+
+
+# Notes
 ## Assumptions And Design Decisions
 
 * Java 8 is now end of life, has known security vulnerability
