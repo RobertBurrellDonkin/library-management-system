@@ -8,7 +8,7 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
 import java.util.Optional;
 
 /**
- * PreAuthenticated scenario TODO
+ * Authenticates requests based on JWT tokens pre-authorised by third parties.
  */
 public class TokenPreAuthenticationFilter extends AbstractPreAuthenticatedProcessingFilter {
 
