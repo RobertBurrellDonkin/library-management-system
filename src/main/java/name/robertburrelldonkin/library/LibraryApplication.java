@@ -28,6 +28,9 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.List;
@@ -67,28 +70,63 @@ public class LibraryApplication implements WebMvcConfigurer {
         return new LeastRecentlyUsedBookCache(maxSize, initialCapacity, loadFactor);
     }
 
+
     @Bean
     public LibraryManagementService libraryManagementService(final LeastRecentlyUsedBookCache cache) {
         return new CachingLibraryManagementService(new Library(), cache);
     }
 
+    /**
+     * Adds rate limiter for books endpoints.
+     *
+     * @param registry not null
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry
+                .addInterceptor(new RateLimitingHandlerInterceptor(maxConcurrentRequests))
+                .addPathPatterns("/api/books");
+    }
+
+    /**
+     * Extracts bearer tokens from the authorization header.
+     *
+     * @return not null
+     */
     @Bean
     public TokenExtractor tokenExtractor() {
         return new BearerTokenExtractor();
     }
 
+    /**
+     * Builds a TokenAuthenticator based on configuration.
+     * For the exercise, configuration is supported only for public key based signed JWT tokens.
+     * Only RSA based public keys generated in Java have been tested.
+     * SecretKeys and other algorithms are supported by the implementation.
+     *
+     * @param algorithm the Java standard name for the algorithm used to generate the public key, or null
+     * @param publicKeyEncoded the public key encoded in Base64 format, or null
+     * @return when both parameters are not empty then a validator that verifies signed JWT tokens using the given
+     * public key, otherwise a reject all authenticator
+     */
     @Bean
     public TokenAuthenticator tokenAuthenticator(
             @Value("${app.security.jwt.algorithm:}") final String algorithm,
-            @Value("${app.security.jwt.public-key:}") final String publicKeyEncoded) throws Exception {
+            @Value("${app.security.jwt.public-key:}") final String publicKeyEncoded)  {
         if (isEmpty(algorithm) || isEmpty(publicKeyEncoded)) {
             logger.warn("Public key and algorithm must be configure to support JWT. Disabling authentication.");
             return token -> Optional.empty();
         }
-        final var publicKey = KeyFactory.getInstance(algorithm)
-                .generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(publicKeyEncoded)));
-        logger.info("JWT Validated With:\n{}", publicKey.toString());
-        return new JwtTokenAuthenticator(publicKey);
+
+        try {
+            final PublicKey publicKey = KeyFactory.getInstance(algorithm)
+                   .generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(publicKeyEncoded)));
+            logger.info("JWT Validated With:\n{}", publicKey.toString());
+            return new JwtTokenAuthenticator(publicKey);
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Bean
@@ -114,36 +152,41 @@ public class LibraryApplication implements WebMvcConfigurer {
     public SecurityFilterChain filterChain(
             @Value("${app.security.authentication}") final boolean authentication,
             final HttpSecurity http,
-            final TokenPreAuthenticationFilter preAuthenticationFilter
+            final TokenPreAuthenticationFilter tokenPreAuthenticationFilter
     ) throws Exception {
         http
-                // TODO: Disable basic auth
+                // Force JWT authentication
                 .httpBasic(AbstractHttpConfigurer::disable)
                 // Cross-Site Request Forgery protection is appropriate only for microservices with a user interface
                 .csrf(AbstractHttpConfigurer::disable)
-                // TODO:
+                // CORS is appropriate only for microservices with a user interface
                 .cors(AbstractHttpConfigurer::disable)
-                //TODO: stateless
+                // Stateless sessions force the JWT token passed in to be verified each time.
+                // This ensures that the expiry claim is verified on every call.
                 .sessionManagement((session) -> session.sessionCreationPolicy(STATELESS))
-                .addFilterBefore(preAuthenticationFilter, BasicAuthenticationFilter.class)
+                // This filter tries to extract and verify a token.
+                // In Spring Security, pre-authentication refers to cases where authentication has been
+                // performed by a third party. The claims in JWT tokens signed by the third party trusted
+                // by this microservice should be accepted without further ado.
+                .addFilterBefore(tokenPreAuthenticationFilter, BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(
                         registry -> {
                             if (authentication) {
                                 logger.info("Enabling authentication");
+                                // Note that authorization would be added at this point.
+                                // This exercise ends with authentication.
+                                // So we allow access to any principals bearing tokens
+                                // singed by the third party trusted by this microservice.
                                 registry.anyRequest().authenticated();
                             } else {
+                                // This configuration is useful for manual and automated testing
+                                // where minting valid tokens may be inconvenient.
+                                // This should not be used in production.
                                 logger.info("Disabling authentication");
                                 registry.anyRequest().permitAll();
                             }
                         });
 
         return http.build();
-    }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry
-                .addInterceptor(new RateLimitingHandlerInterceptor(maxConcurrentRequests))
-                .addPathPatterns("/api/books");
     }
 }

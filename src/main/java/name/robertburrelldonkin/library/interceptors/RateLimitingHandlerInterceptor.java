@@ -8,6 +8,10 @@ import java.util.concurrent.Semaphore;
 
 import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
 
+/**
+ * Limits endpoint access rate by returning 429 TOO_MANY_REQUESTS when the number of
+ * concurrent requests intercepted exceeds maxConcurrentRequests.
+ */
 public class RateLimitingHandlerInterceptor implements HandlerInterceptor {
 
     private final Semaphore semaphore;
