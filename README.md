@@ -224,7 +224,6 @@ TODO:
 
 
 # Notes
-## Assumptions And Design Decisions
 
 * Java 8 is now end of life, has known security vulnerability
   and is not supported by SpringBoot 3. The language used is consistently
