@@ -11,10 +11,13 @@ Assuming that the **Java 8+** specified includes later version and noting that
 
 this solution requires Java 17. It is expected to run on later versions but has only been tested on Java 17.
 
+This document tries to keep close to the structure outlined in the submission instructions.
 
 ## How To Run
 The solution is a conventional Spring Boot 3 microservice and can be run in the usual way. Profiles are used to allow
 authentication variations.
+
+By default, the microservice will start on port 8080 but this can be changed using the usual mechanisms
 
 ### Without JWT Authorization
 
@@ -45,6 +48,98 @@ tokens with other claims.
 
 Note that this solution authenticates using sighed JWT bearer tokens but does not include authorization. 
 Full access is permitted to all subjects.
+
+## RESTful API
+
+The library books API endpoints are based at http://localhost:8080/api/books 
+
+### Book Data Structure
+Books are modelled as JSON objects:
+
+* **Structure**
+
+| Attribute           | Type   | Required | Constraints | 
+|---------------------|--------|----------|-------------|
+| `isbn`              | string | Yes      |             |
+| `title`             | string | Yes      |             |
+| `author`            | string | Yes      |             |
+| `publicationYear`   | number | Yes      | Positive    |
+| `availableCopies`   | number | Yes      | Positive    |
+
+
+* **Example**
+```json
+{
+  "isbn": "some-isbn",
+  "title": "some-title",
+  "author": "some-author",
+  "publicationYear": 2001,
+  "availableCopies": 4
+}
+```
+
+### AddBook
+
+Adds a new book to the library.
+
+```plaintext
+POST /api/books
+```
+
+* **Accepts** JSON
+* **Payload** `Book` object 
+  * **Example**
+```json
+{
+  "isbn": "some-isbn",
+  "title": "some-title",
+  "author": "some-author",
+  "publicationYear": 2001,
+  "availableCopies": 4
+}
+``` 
+
+#### Success Response
+  * **Status** `201 CREATED`
+  * **Body** (empty)
+
+#### Error Responses
+##### Book Is Already In Library
+* **Status** `409 CONFLICT`
+* **Body** (empty)
+
+##### Invalid Book
+* **Status** `400 BAD REQUEST`
+* **Body** JSON error messages
+
+| Attribute           | Type   | Required | Description                                                       | 
+|---------------------|--------|----------|-------------------------------------------------------------------|
+| `isbn`              | string | No       | Any validation errors associated with the `isbn` field            |
+| `title`             | string | No       | Any validation errors associated with the `title` field           |
+| `author`            | string | No       | Any validation errors associated with the `author` field          |
+| `publicationYear`   | string | No       | Any validation errors associated with the `publicationYear` field |
+| `availableCopies`   | string | No       | Any validation errors associated with the `availableCopies` field |
+
+  * **Example**
+```json
+{
+  "author": "author is mandatory",
+  "availableCopies": "availableCopies must be positive",
+  "isbn": "isbn is mandatory",
+  "publicationYear": "publicationYear must be positive",
+  "title": "title is mandatory"
+}
+```
+
+### RemoveBook
+
+### FindBookByISBN
+
+### FindBooksByAuthor
+
+### BorrowBook
+
+### 
 
 
 # Notes
@@ -196,6 +291,7 @@ Full access is permitted to all subjects.
     * This is a authentication, rather than authorization.
     * For production use,
     * Responsibility of the token provider to add expired. So won't check.
+* Let's assume all attributes are required and that available copies and publication year must be positive. 
 
 
   
