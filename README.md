@@ -11,9 +11,40 @@ Assuming that the **Java 8+** specified includes later version and noting that
 
 this solution requires Java 17. It is expected to run on later versions but has only been tested on Java 17.
 
+
 ## How To Run
+The solution is a conventional Spring Boot 3 microservice and can be run in the usual way. Profiles are used to allow
+authentication variations.
 
+### Without JWT Authorization
 
+The ``insecure`` profile permits all requests. 
+
+```
+$ mvn spring-boot:run -Dspring-boot.run.profiles=insecure
+```
+
+Running this profile is the recommended starting point.  
+
+### With JWT Authorization
+
+The ``secure`` profile includes a sample public key which private key is used in integration tests. 
+
+```
+$ mvn spring-boot:run -Dspring-boot.run.profiles=secure
+```
+
+The following Authorization HTTP Header with a JWT bearer token allows authorized access when running this profile. 
+
+```
+Authorization: Bearer eyJhbGciOiJSUzUxMiJ9.eyJzdWIiOiJhZG1pbiJ9.J7apSRgAlXDZjZ1kY1K4GRhjn1ikq3qSQrGJy7P6d5wSxBcs27CbWfF8alJmffpXUsuM2WQbAHsCbzG6Httd1K8sYBE1TCakOPT84fg-BzAIPMVxtpGc9Mtv_tSj_QYb96atZJjjtkobKlyGz4t2LIU10ZyN55QQIN2pHKuMkpnKGEKTlCYAzBFFC7NzAPBtPyJXt7Thl1oC-ChHBBeKEWE--cifLRyFDru3G6o-r5ud5hpgM7rCV3AGICRUppvZoZxdMRb94ECuhCzveEbY9fEMKCeWQKlIC4DNppxzVkXQ6NYjZnhx-S9FuVaTtJgotZPdy3yxLru9LGRUIJk1TTOF08zP1dbvKX4QDac7_3YqLkCCLMy_gRRI71rqypnbZkh5R5r1_S-Rv9m5B9IA7c-kBc3NnAZ_oAjF2YGlL1QotbkF1lr7XBkFT4OHgKqRukiwiWjUMURyexxel_y8iL06_GB9LgyvWiYpckdfWJK9_yXE_q4sJXuMTAODND5FPX7KfqYJjg3Ok5uqGkor3ZEDDj9Bbm2tx-uLO4SC56HxSwcuEVwBxdHqYrEKL-99EcgIKaZrrXLjtBgtSP2PuhJxFpzEzu7aEro534p4VO3ySfjG8s-2GMEzbUirx15MSlaiizi7mdPqbWvBNS2rGzXmUELjsjt_z9ve5KiILW4
+```
+
+Alternatively, JwtTokenBuilder generates suitable JWT tokens for the integration tests, and could be used to generate
+tokens with other claims.
+
+Note that this solution authenticates using sighed JWT bearer tokens but does not include authorization. 
+Full access is permitted to all subjects.
 
 
 # Notes
