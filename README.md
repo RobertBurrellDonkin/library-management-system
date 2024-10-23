@@ -125,9 +125,14 @@ standard JWT implementation would rest on a lot of assumptions.
     * Let's assume that only a handful of microservices are authorised. So we'll externalise
       the configuration. For larger numbers of subjects, we'd probably opt for a data store or
       a dedicated identity federator.
+    * There's also the expiry, which we should really check. Typically a production token issued
+    by a system such Amazon Cognito would have a limited time before expiry.  
     * There is also the question of algorithm and key. Public/private key cryptography is 
     the more robust solution. The public key is not confidential and could be safely 
-    externalised as part of the configuration.  
+    externalised as part of the configuration.
+  * There is also the question of testing, both manual and automated.
+    * Profiles are likely to be an attractive option.
+    * "jwt" and "unrestricted" profiles 
   
 
 
