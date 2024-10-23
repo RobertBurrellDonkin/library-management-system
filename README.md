@@ -133,13 +133,94 @@ POST /api/books
 
 ### RemoveBook
 
+Removes a book from the library by ISBN.
+
+```plaintext
+DELETE /api/books/{isbn}
+```
+where
+ * `{isbn}` is the ISBN of the book to be removed
+
+#### Success Response
+* **Status** `200 OK`
+* **Body** (empty)
+
+#### Error Responses
+##### Book Is Not In Library
+* **Status** `404 NOT FOUND`
+* **Body** (empty)
+
 ### FindBookByISBN
 
+Returns a book by its ISBN.
+
+```plaintext
+GET /api/books/{isbn}
+```
+where
+* `{isbn}` is the ISBN of the book to be found
+
+#### Success Response
+* **Status** `200 OK`
+* **Payload** `Book` object
+    * **Example**
+```json
+{
+  "isbn": "some-isbn",
+  "title": "some-title",
+  "author": "some-author",
+  "publicationYear": 2001,
+  "availableCopies": 4
+}
+```
+
+#### Error Responses
+##### Book Is Not In Library
+* **Status** `404 NOT FOUND`
+* **Body** (empty)
+
 ### FindBooksByAuthor
+Returns a list of books by a given author
+
+```plaintext
+GET /api/books?author={author}
+```
+where
+* `{author}` is the name of the author 
+
+#### Success Response
+* **Status** `200 OK`
+* **Payload** Array of `Book` object, empty when no books in the library were written by the given author
+    * **Example**
+```json
+[
+    {
+      "isbn": "some-isbn",
+      "title": "some-title",
+      "author": "some-author",
+      "publicationYear": 2001,
+      "availableCopies": 4
+    }
+]
+```
+
 
 ### BorrowBook
 
-### 
+### ReturnBook
+
+# Assumptions And Design Decisions
+
+# Additional Features and Optimizations
+
+## Caching Books
+TODO:
+
+## Basic Rate Limits
+TODO:
+
+## Simple JWT Authentication
+TODO:
 
 
 # Notes
