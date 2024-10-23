@@ -300,28 +300,22 @@ where
 
 # Assumptions And Design Decisions
 
-# Additional Features and Optimizations
-
-## Caching Books
-
-TODO:
-
-## Basic Rate Limits
-
-TODO:
-
-## Simple JWT Authentication
-
-TODO:
-
-# Notes
-
+## Versions
 * Java 8 is now end of life, has known security vulnerability
   and is not supported by SpringBoot 3. The language used is consistently
-  **Java 8+** (rather than **Java 8**). Let's assume Java 17 is an acceptable compromise.
+  **Java 8+** (rather than **Java 8**). 
+  * **Let's assume Java 17 is an acceptable compromise.**
+
+## Organisation
 * Let's assume that library is intended to be reused at the microservice level by
   calling the RESTful API, rather than as a Java library. So no need for a multi-module
   set up.
+* This project may well be too small to justify this, but I like to organise using packages.
+* I'm from the minimal comments school of thought but the spec has
+* Looking ahead
+* Going be relying on equals to have domain meaning so let's test
+
+## Domain
 * We could model Book as a value object using a Record. This lends itself to an
   event driven architecture which would have advantages in a distributed system
   context.
@@ -340,10 +334,8 @@ TODO:
       Let's go with that for now.
     * There are a lot of parameters with the same type. Let's add a builder to increase
       readability.
-* This project may well be too small to justify this, but I like to organise using packages.
-* I'm from the minimal comments school of thought but the spec has
-* Looking ahead
-* Going be relying on equals to have domain meaning so let's test
+
+## Library Class Design
 * For a small library with a few books then a set or list. Let's assume that the library
   management system should support large numbers of books whilst providing an efficient
   find by unique attribute (ISBN). Based on a Map.
@@ -386,19 +378,8 @@ TODO:
 * If we want to be able to apply business logic around borrowing, we'll need to stop the internal
   representation escaping. So we'll need to switch a record and an internal representation.
 * Before pushing on to create a cache, let's extract an interface.
-* Maintain even a simple cache of limited size imposes costs, especially when concurrency is
-  considered. The most reasonable assumption is that books will be added and remove, borrowed and returned
-  relatively infrequently, and that findByISBN is quick. We'll cache search results in a map and
-  invalidate. Provided that we synchronize, we can build a simple LRU cache based on LinkedHashMap.
-* Let's separate concerns around invalidation logic from the actual cache by using an interface.
-* This is going to be tricky, since we need to invalidate based on isbn but we search on author.
-*
-* A front side cache for searches is an interesting problem but on reading more carefully,
-  we're asked for frequently accessed books.
-    * Let's accept that searches will be slow but that's an interest problem. Let's assume that
-      it's just findByISbn that should be cached. This simplifies the logic.
-    * We could perhaps add books returned by search but that seems like adding complexity without
-      compelling reason.
+
+# RESTful API
 * REST design TODO (see notes)
 * Considered a reactive design but reject
 * POST -> created
@@ -419,6 +400,36 @@ TODO:
       We'll keep the API simple for now, though.
 
 * End To End test - just the golden path
+* Let's assume all attributes are required and that available copies and publication year must be positive.
+* 409 CONFLICT ->
+    * The client should GET the book before trying to borrow. If the book has been subsequently borrowed then the client
+      state is in conflict with the server state. The client should retry the GET to discover when a copy has been
+      returned/
+
+## Configuration
+* I'll need to get around to documenting the configuration at some stage.
+* Added configuration property to switch auth on and off. Added no authentication profile to
+  allow manual and automated testing.
+
+# Additional Features and Optimizations
+
+## Caching Books
+* Maintain even a simple cache of limited size imposes costs, especially when concurrency is
+  considered. The most reasonable assumption is that books will be added and remove, borrowed and returned
+  relatively infrequently, and that findByISBN is quick. We'll cache search results in a map and
+  invalidate. Provided that we synchronize, we can build a simple LRU cache based on LinkedHashMap.
+* Let's separate concerns around invalidation logic from the actual cache by using an interface.
+* This is going to be tricky, since we need to invalidate based on isbn but we search on author.
+*
+* A front side cache for searches is an interesting problem but on reading more carefully,
+  we're asked for frequently accessed books.
+    * Let's accept that searches will be slow but that's an interest problem. Let's assume that
+      it's just findByISbn that should be cached. This simplifies the logic.
+    * We could perhaps add books returned by search but that seems like adding complexity without
+      compelling reason.
+
+## Basic Rate Limits
+
 * Design discussion around rate limiter.
     * For rate limiting the services, a delegate or perhaps AOP annotations would have been an elegant solution.
     * We could limit the endpoints indirectly by rate limiting the services in this fashion but
@@ -431,6 +442,9 @@ TODO:
         * or limit the number of requests within a time period
     * Limiting concurrent requests protects the but is more friendly to clients. Let's assume that
       billing isn't related to rate limiting and limit concurrent requests.
+
+## Simple JWT Authentication
+
 * Good security design requires knowledge, both of the technologies and the context. A production
   standard JWT implementation would rest on a lot of assumptions.
     * Let's assume that this API will be accessed by other microservices who will bwe able to mint tokens either
@@ -450,9 +464,6 @@ TODO:
     * There is also the question of testing, both manual and automated.
         * Profiles are likely to be an attractive option.
         * "jwt" and "unrestricted" profiles
-* I'll need to get around to documenting the configuration at some stage.
-* Added configuration property to switch auth on and off. Added no authentication profile to
-  allow manual and automated testing.
 * Some interesting design decisions around Jwt authenticator. Library now parser and validates in a single operation.
   So makes sense to inject the validation key.
     * I opted to use a domain object for readability.
@@ -462,12 +473,15 @@ TODO:
     * This is a authentication, rather than authorization.
     * For production use,
     * Responsibility of the token provider to add expired. So won't check.
-* Let's assume all attributes are required and that available copies and publication year must be positive.
-* 409 CONFLICT ->
-    * The client should GET the book before trying to borrow. If the book has been subsequently borrowed then the client
-      state is in conflict with the server state. The client should retry the GET to discover when a copy has been
-      returned/
-* TODO CAS approach for borrow 
+
+## Compare And Swap
+
+* TODO CAS approach for borrow
+
+
+
+
+ 
 
 
   
