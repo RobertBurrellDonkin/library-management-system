@@ -8,7 +8,6 @@ import java.util.List;
 
 import static java.util.Objects.nonNull;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.util.ObjectUtils.isEmpty;
 
 
 public class BearerTokenExtractor implements TokenExtractor {
@@ -25,9 +24,7 @@ public class BearerTokenExtractor implements TokenExtractor {
                 final var header = headers.nextElement().strip();
                 if (header.startsWith(BEARER)) {
                     final var token = header.substring(TOKEN_START_INDEX).strip();
-                    if (!isEmpty(token)) {
-                        results.add(token);
-                    }
+                    results.add(token);
                 }
             }
         }

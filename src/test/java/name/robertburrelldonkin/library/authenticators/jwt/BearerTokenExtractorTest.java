@@ -57,6 +57,12 @@ class BearerTokenExtractorTest {
         }
 
         @Test
+        void whenAuthorizationHeaderIsBearerMissingToken() {
+            when(request.getHeaders("Authorization")).thenReturn(enumerate(List.of("Bearer ")));
+            assertThat(bearerTokenExtractor.extractToken(request), hasSize(0));
+        }
+
+        @Test
         void whenAuthorizationHeaderIsBearerToken() {
             when(request.getHeaders("Authorization")).thenReturn(enumerate(List.of(" Bearer SomeToken")));
             assertThat(bearerTokenExtractor.extractToken(request), contains("SomeToken"));

@@ -109,11 +109,6 @@ public class BooksController {
                 .forEach(fieldError -> {
                     errors.put(fieldError.getField(), fieldError.getDefaultMessage());
                 });
-        methodArgumentNotValidException
-                .getGlobalErrors()
-                .forEach(globalError -> {
-                    errors.put(globalError.getObjectName(), globalError.getDefaultMessage());
-                });
         return errors;
     }
 
