@@ -7,10 +7,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Vector;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,43 +29,60 @@ class BearerTokenExtractorTest {
     class ExtractToken {
         @Test
         void whenHeaders() {
-            assertThat(bearerTokenExtractor.extractToken(request), is(Optional.empty()));
+            assertThat(bearerTokenExtractor.extractToken(request), hasSize(0));
         }
 
         @Test
         void whenNoAuthorizationHeaderIsPresent() {
-            when(request.getHeader("Authorization")).thenReturn(null);
-            assertThat(bearerTokenExtractor.extractToken(request), is(Optional.empty()));
+            when(request.getHeaders("Authorization")).thenReturn(null);
+            assertThat(bearerTokenExtractor.extractToken(request), hasSize(0));
         }
 
         @Test
         void whenAuthorizationHeaderIsNotBearerToken() {
-            when(request.getHeader("Authorization")).thenReturn("not-bearer-token");
-            assertThat(bearerTokenExtractor.extractToken(request), is(Optional.empty()));
+            when(request.getHeaders("Authorization")).thenReturn(enumerate(List.of("not-bearer-token")));
+            assertThat(bearerTokenExtractor.extractToken(request), hasSize(0));
         }
 
         @Test
         void whenAuthorizationHeaderIsInvalidBearer() {
-            when(request.getHeader("Authorization")).thenReturn("Bearer");
-            assertThat(bearerTokenExtractor.extractToken(request), is(Optional.empty()));
+            when(request.getHeaders("Authorization")).thenReturn(enumerate(List.of("Bearer")));
+            assertThat(bearerTokenExtractor.extractToken(request), hasSize(0));
         }
 
         @Test
         void whenAuthorizationHeaderIsEmptyBearerToken() {
-            when(request.getHeader("Authorization")).thenReturn(" Bearer   ");
-            assertThat(bearerTokenExtractor.extractToken(request), is(Optional.empty()));
+            when(request.getHeaders("Authorization")).thenReturn(enumerate(List.of(" Bearer   ")));
+            assertThat(bearerTokenExtractor.extractToken(request), hasSize(0));
         }
 
         @Test
         void whenAuthorizationHeaderIsBearerToken() {
-            when(request.getHeader("Authorization")).thenReturn(" Bearer SomeToken");
-            assertThat(bearerTokenExtractor.extractToken(request), is(Optional.of("SomeToken")));
+            when(request.getHeaders("Authorization")).thenReturn(enumerate(List.of(" Bearer SomeToken")));
+            assertThat(bearerTokenExtractor.extractToken(request), contains("SomeToken"));
         }
 
         @Test
         void whenAuthorizationHeaderIsBearerTokenWithWhitespace() {
-            when(request.getHeader("Authorization")).thenReturn(" Bearer          SomeToken    ");
-            assertThat(bearerTokenExtractor.extractToken(request), is(Optional.of("SomeToken")));
+            when(request.getHeaders("Authorization")).thenReturn(enumerate(List.of(" Bearer          SomeToken    ")));
+            assertThat(bearerTokenExtractor.extractToken(request), contains("SomeToken"));
         }
+
+        @Test
+        void whenThereAreOtherAuthorizationHeaders() {
+            when(request.getHeaders("Authorization")).thenReturn(enumerate(List.of(" Bearer          SomeToken    ", "Basic SomeBasicAuth")));
+            assertThat(bearerTokenExtractor.extractToken(request), contains("SomeToken"));
+        }
+
+
+        @Test
+        void whenThereAreMultipleAuthorizationHeadersWithBearerTokens() {
+            when(request.getHeaders("Authorization")).thenReturn(enumerate(List.of("Bearer          SomeToken    ", "Bearer          AnotherToken    ")));
+            assertThat(bearerTokenExtractor.extractToken(request), contains("SomeToken", "AnotherToken"));
+        }
+    }
+
+    private static Enumeration<String> enumerate(List<String> strings) {
+        return new Vector<>(strings).elements();
     }
 }

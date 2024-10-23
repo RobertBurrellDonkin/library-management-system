@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 
+import java.util.Optional;
+
 /**
  * PreAuthenticated scenario TODO
  */
@@ -22,6 +24,7 @@ public class TokenPreAuthenticationFilter extends AbstractPreAuthenticatedProces
 
     /**
      * Extracts and authorises a token, returning the subject as principal.
+     * When multiple tokens are extracted, the first authorised subject will be returned as principal
      *
      * @param request not null
      * @return the subject of an authenticated token, or null otherwise
@@ -30,8 +33,12 @@ public class TokenPreAuthenticationFilter extends AbstractPreAuthenticatedProces
     protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
         final var principal = tokenExtractor
                 .extractToken(request)
-                .flatMap(tokenAuthenticator::authenticate)
+                .stream()
+                .map(tokenAuthenticator::authenticate)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .map(Subject::name)
+                .findFirst()
                 .orElse(null);
         logger.info("Principal is: {}", principal);
         return principal;

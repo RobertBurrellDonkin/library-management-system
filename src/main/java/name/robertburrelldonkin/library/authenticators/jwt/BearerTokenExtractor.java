@@ -3,9 +3,14 @@ package name.robertburrelldonkin.library.authenticators.jwt;
 import jakarta.servlet.http.HttpServletRequest;
 import name.robertburrelldonkin.library.authenticators.TokenExtractor;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
+import static java.util.Objects.nonNull;
+import static java.util.stream.StreamSupport.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.util.ObjectUtils.isEmpty;
+
 
 public class BearerTokenExtractor implements TokenExtractor {
 
@@ -13,11 +18,20 @@ public class BearerTokenExtractor implements TokenExtractor {
     public static final int TOKEN_START_INDEX = BEARER.length();
 
     @Override
-    public Optional<String> extractToken(HttpServletRequest request) {
-        return Optional.ofNullable(request.getHeader(AUTHORIZATION))
-                .filter(s -> !s.isEmpty())
-                .map(String::strip)
-                .filter(s -> s.startsWith(BEARER))
-                .map(s -> s.substring(TOKEN_START_INDEX).strip());
+    public List<String> extractToken(HttpServletRequest request) {
+        final var results = new ArrayList<String>();
+        final var headers = request.getHeaders(AUTHORIZATION);
+        if (nonNull(headers)) {
+            while (headers.hasMoreElements()) {
+                final var header = headers.nextElement().strip();
+                if (header.startsWith(BEARER)) {
+                    final var token = header.substring(TOKEN_START_INDEX).strip();
+                    if (!isEmpty(token)) {
+                        results.add(token);
+                    }
+                }
+            }
+        }
+        return results;
     }
 }

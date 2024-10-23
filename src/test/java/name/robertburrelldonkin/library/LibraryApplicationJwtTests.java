@@ -5,9 +5,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
+
+import java.util.List;
 
 import static name.robertburrelldonkin.library.authenticators.jwt.JwtTokenBuilder.createAValidToken;
 import static name.robertburrelldonkin.library.authenticators.jwt.JwtTokenBuilder.createAnExpiredToken;
@@ -324,6 +327,144 @@ class LibraryApplicationJwtTests {
                     .exchange()
                     .expectStatus()
                     .isOk();
+        }
+    }
+
+    @Nested
+    class ValidTokenWithMultipleAuthorizationHeaders {
+
+        String token;
+
+        @BeforeEach
+        void setUp() {
+            token = createAValidToken();
+        }
+
+        @Test
+        void endToEndRoundTrip() {
+            webClient.get()
+                    .uri("/api/books/some-isbn")
+                    .headers(this::setAuthorizationHeaders)
+                    .exchange()
+                    .expectStatus()
+                    .isNotFound();
+
+            webClient.post()
+                    .uri("/api/books")
+                    .headers(this::setAuthorizationHeaders)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue("""
+                            {
+                              "isbn": "some-isbn",
+                              "title": "some-title",
+                              "author": "some-author",
+                              "publicationYear": 2001,
+                              "availableCopies": 4
+                            }
+                            """)
+                    .exchange()
+                    .expectStatus()
+                    .isCreated();
+
+            webClient.get()
+                    .uri("/api/books/some-isbn")
+                    .headers(this::setAuthorizationHeaders)
+                    .exchange()
+                    .expectStatus()
+                    .isOk()
+                    .expectBody()
+                    .json("""
+                            {
+                              "isbn": "some-isbn",
+                              "title": "some-title",
+                              "author": "some-author",
+                              "publicationYear": 2001,
+                              "availableCopies": 4
+                            }
+                            """);
+
+            webClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/api/books")
+                            .queryParam("author", "some-author")
+                            .build())
+                    .headers(this::setAuthorizationHeaders)
+                    .exchange()
+                    .expectStatus()
+                    .isOk()
+                    .expectBody()
+                    .json("""
+                            [{
+                              "isbn": "some-isbn",
+                              "title": "some-title",
+                              "author": "some-author",
+                              "publicationYear": 2001,
+                              "availableCopies": 4
+                            }]
+                            """);
+
+            webClient.post()
+                    .uri("/api/books/some-isbn/borrow")
+                    .headers(this::setAuthorizationHeaders)
+                    .exchange()
+                    .expectStatus()
+                    .isOk();
+
+            webClient.get()
+                    .uri("/api/books/some-isbn")
+                    .headers(this::setAuthorizationHeaders)
+                    .exchange()
+                    .expectStatus()
+                    .isOk()
+                    .expectBody()
+                    .json("""
+                            {
+                              "isbn": "some-isbn",
+                              "title": "some-title",
+                              "author": "some-author",
+                              "publicationYear": 2001,
+                              "availableCopies": 3
+                            }
+                            """);
+
+            webClient.post()
+                    .uri("/api/books/some-isbn/return")
+                    .headers(this::setAuthorizationHeaders)
+                    .exchange()
+                    .expectStatus()
+                    .isOk();
+
+            webClient.get()
+                    .uri("/api/books/some-isbn")
+                    .headers(this::setAuthorizationHeaders)
+                    .exchange()
+                    .expectStatus()
+                    .isOk()
+                    .expectBody()
+                    .json("""
+                            {
+                              "isbn": "some-isbn",
+                              "title": "some-title",
+                              "author": "some-author",
+                              "publicationYear": 2001,
+                              "availableCopies": 4
+                            }
+                            """);
+
+            webClient.delete()
+                    .uri("/api/books/some-isbn")
+                    .headers(this::setAuthorizationHeaders)
+                    .exchange()
+                    .expectStatus()
+                    .isOk();
+        }
+
+        private void setAuthorizationHeaders(HttpHeaders httpHeaders) {
+            httpHeaders.addAll(AUTHORIZATION, List.of(
+                    "Bearer InvalidToken" ,
+                    "Bearer " + token,
+                    "Basic SomeBasicAuth"
+            ));
         }
     }
 

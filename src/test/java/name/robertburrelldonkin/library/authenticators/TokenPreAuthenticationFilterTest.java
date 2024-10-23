@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,15 +44,32 @@ class TokenPreAuthenticationFilterTest {
     class GetPreAuthenticatedPrincipal {
         @Test
         void shouldExtractTokenAndReturnSubjectWhenAuthenticated() {
-            when(tokenExtractor.extractToken(request)).thenReturn(Optional.of("some-token"));
+            when(tokenExtractor.extractToken(request)).thenReturn(List.of("some-token"));
             when(tokenAuthenticator.authenticate("some-token")).thenReturn(Optional.of(new Subject("some-subject")));
 
             assertThat(filter.getPreAuthenticatedPrincipal(request), is("some-subject"));
         }
 
         @Test
+        void shouldExtractTokenAndReturnFirstSubjectWhenBothAreAuthenticate() {
+            when(tokenExtractor.extractToken(request)).thenReturn(List.of("some-token", "another-token"));
+            when(tokenAuthenticator.authenticate("some-token")).thenReturn(Optional.of(new Subject("some-subject")));
+
+            assertThat(filter.getPreAuthenticatedPrincipal(request), is("some-subject"));
+        }
+
+        @Test
+        void shouldExtractTokenAndReturnAuthenticSubject() {
+            when(tokenExtractor.extractToken(request)).thenReturn(List.of("some-token", "another-token"));
+            when(tokenAuthenticator.authenticate("some-token")).thenReturn(Optional.empty());
+            when(tokenAuthenticator.authenticate("another-token")).thenReturn(Optional.of(new Subject("another-subject")));
+
+            assertThat(filter.getPreAuthenticatedPrincipal(request), is("another-subject"));
+        }
+
+        @Test
         void shouldExtractTokenAndReturnNullWhenNotAuthenticated() {
-            when(tokenExtractor.extractToken(request)).thenReturn(Optional.of("some-token"));
+            when(tokenExtractor.extractToken(request)).thenReturn(List.of("some-token"));
             when(tokenAuthenticator.authenticate("some-token")).thenReturn(Optional.empty());
 
             assertThat(filter.getPreAuthenticatedPrincipal(request), is(nullValue()));
@@ -60,7 +78,7 @@ class TokenPreAuthenticationFilterTest {
 
         @Test
         void whenTokenIsNotPresent() {
-            when(tokenExtractor.extractToken(request)).thenReturn(Optional.empty());
+            when(tokenExtractor.extractToken(request)).thenReturn(List.of());
 
             assertThat(filter.getPreAuthenticatedPrincipal(request), is(nullValue()));
         }
