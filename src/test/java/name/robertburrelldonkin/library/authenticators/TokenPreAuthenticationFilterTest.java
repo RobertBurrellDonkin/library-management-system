@@ -43,7 +43,7 @@ class TokenPreAuthenticationFilterTest {
     class GetPreAuthenticatedPrincipal {
         @Test
         void shouldExtractTokenAndReturnSubjectWhenAuthenticated() {
-            when(tokenExtractor.extractToken(request)).thenReturn("some-token");
+            when(tokenExtractor.extractToken(request)).thenReturn(Optional.of("some-token"));
             when(tokenAuthenticator.authenticate("some-token")).thenReturn(Optional.of(new Subject("some-subject")));
 
             assertThat(filter.getPreAuthenticatedPrincipal(request), is("some-subject"));
@@ -51,8 +51,16 @@ class TokenPreAuthenticationFilterTest {
 
         @Test
         void shouldExtractTokenAndReturnNullWhenNotAuthenticated() {
-            when(tokenExtractor.extractToken(request)).thenReturn("some-token");
+            when(tokenExtractor.extractToken(request)).thenReturn(Optional.of("some-token"));
             when(tokenAuthenticator.authenticate("some-token")).thenReturn(Optional.empty());
+
+            assertThat(filter.getPreAuthenticatedPrincipal(request), is(nullValue()));
+        }
+
+
+        @Test
+        void whenTokenIsNotPresent() {
+            when(tokenExtractor.extractToken(request)).thenReturn(Optional.empty());
 
             assertThat(filter.getPreAuthenticatedPrincipal(request), is(nullValue()));
         }

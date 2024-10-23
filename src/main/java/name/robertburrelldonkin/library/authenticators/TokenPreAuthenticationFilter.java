@@ -28,8 +28,11 @@ public class TokenPreAuthenticationFilter extends AbstractPreAuthenticatedProces
      */
     @Override
     protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
-        final var token = tokenExtractor.extractToken(request);
-        final var principal = tokenAuthenticator.authenticate(token).map(Subject::name).orElse(null);
+        final var principal = tokenExtractor
+                .extractToken(request)
+                .flatMap(tokenAuthenticator::authenticate)
+                .map(Subject::name)
+                .orElse(null);
         logger.info("Principal is: {}", principal);
         return principal;
     }
