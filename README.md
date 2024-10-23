@@ -335,7 +335,7 @@ where
     * There are a lot of parameters with the same type. Let's add a builder to increase
       readability.
 
-## Library Class Design
+## Library Design
 * For a small library with a few books then a set or list. Let's assume that the library
   management system should support large numbers of books whilst providing an efficient
   find by unique attribute (ISBN). Based on a Map.
