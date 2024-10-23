@@ -143,8 +143,8 @@ So makes sense to inject the validation key.
   * In Spring Security terms, this is a PreAuthenticated scenario. Spring Security provides a little framework for 
   scenarios such as this. Let's adopt it.
   * This is a authentication, rather than authorization.
-  * For production use,  
-
+  * For production use, 
+  * Responsibility of the token provider to add expired. So won't check.
 
 
   
