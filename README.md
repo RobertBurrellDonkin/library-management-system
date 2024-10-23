@@ -142,6 +142,8 @@ So makes sense to inject the validation key.
 * The assumption is that isn't a user/password but a signed subject. This means we 
   * In Spring Security terms, this is a PreAuthenticated scenario. Spring Security provides a little framework for 
   scenarios such as this. Let's adopt it.
+  * This is a authentication, rather than authorization.
+  * For production use,  
 
 
 

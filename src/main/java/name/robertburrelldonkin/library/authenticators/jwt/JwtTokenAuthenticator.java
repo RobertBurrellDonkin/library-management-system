@@ -41,7 +41,7 @@ public class JwtTokenAuthenticator implements TokenAuthenticator {
             logger.info("Authenticated subject: {}", subject);
             return Optional.of(subject);
         } catch (JwtException | IllegalArgumentException e) {
-            logger.error("Invalid JWT token: {}", token, e);
+            logger.info("Invalid JWT token: {}", token, e);
         }
         return Optional.empty();
     }
