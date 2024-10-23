@@ -1,10 +1,13 @@
 package name.robertburrelldonkin.library.domain;
 
-public record Book(String isbn,
-                   String title,
-                   String author,
-                   int publicationYear,
-                   int availableCopies) {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+
+public record Book(@NotBlank(message = "isbn is mandatory") String isbn,
+                   @NotBlank(message = "title is mandatory") String title,
+                   @NotBlank(message = "author is mandatory") String author,
+                   @Positive(message = "publicationYear must be positive") int publicationYear,
+                   @Positive(message = "availableCopies must be positive") int availableCopies) {
 
     public static Builder aBook() {
         return new Builder();

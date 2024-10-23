@@ -20,8 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BooksController.class)
 @ActiveProfiles("insecure")
@@ -72,6 +71,160 @@ class BooksControllerTest {
                             .withAvailableCopies(4)
                             .build());
         }
+
+        @Test
+        void whenBookIsMissingIsbn() throws Exception {
+            when(libraryManagementService.addBook(book)).thenReturn(true);
+
+            mvc.perform(
+                            post("/api/books")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(
+                                            """
+                                                    {
+                                                      "title": "some-title",
+                                                      "author": "some-author",
+                                                      "publicationYear": 2001,
+                                                      "availableCopies": 4
+                                                    }
+                                                    """))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.isbn", is("isbn is mandatory")))
+                    .andExpect(content().contentType(APPLICATION_JSON));
+        }
+
+        @Test
+        void whenBookIsMissingTitle() throws Exception {
+            when(libraryManagementService.addBook(book)).thenReturn(true);
+
+            mvc.perform(
+                            post("/api/books")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(
+                                            """
+                                                    {
+                                                      "isbn": "some-isbn",
+                                                      "author": "some-author",
+                                                      "publicationYear": 2001,
+                                                      "availableCopies": 4
+                                                    }
+                                                    """))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.title", is("title is mandatory")))
+                    .andExpect(content().contentType(APPLICATION_JSON));
+        }
+
+        @Test
+        void whenBookIsMissingAuthor() throws Exception {
+            when(libraryManagementService.addBook(book)).thenReturn(true);
+
+            mvc.perform(
+                            post("/api/books")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(
+                                            """
+                                                    {
+                                                      "isbn": "some-isbn",
+                                                      "title": "some-title",
+                                                      "publicationYear": 2001,
+                                                      "availableCopies": 4
+                                                    }
+                                                    """))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.author", is("author is mandatory")))
+                    .andExpect(content().contentType(APPLICATION_JSON));
+        }
+
+        @Test
+        void whenBookIsPublicationYearIsNegative() throws Exception {
+            when(libraryManagementService.addBook(book)).thenReturn(true);
+
+            mvc.perform(
+                            post("/api/books")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(
+                                            """
+                                                    {
+                                                      "isbn": "some-isbn",
+                                                      "title": "some-title",
+                                                      "author": "some-author",
+                                                      "publicationYear":-1,
+                                                      "availableCopies": 4
+                                                    }
+                                                    """))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.publicationYear", is("publicationYear must be positive")))
+                    .andExpect(content().contentType(APPLICATION_JSON));
+        }
+
+        @Test
+        void whenBookIsPublicationYearIsZero() throws Exception {
+            when(libraryManagementService.addBook(book)).thenReturn(true);
+
+            mvc.perform(
+                            post("/api/books")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(
+                                            """
+                                                    {
+                                                      "isbn": "some-isbn",
+                                                      "title": "some-title",
+                                                      "author": "some-author",
+                                                      "publicationYear": 0,
+                                                      "availableCopies": 4
+                                                    }
+                                                    """))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.publicationYear", is("publicationYear must be positive")))
+                    .andExpect(content().contentType(APPLICATION_JSON));
+        }
+
+
+        @Test
+        void whenBookAvailableCopiesIsNegative() throws Exception {
+            when(libraryManagementService.addBook(book)).thenReturn(true);
+
+            mvc.perform(
+                            post("/api/books")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(
+                                            """
+                                                    {
+                                                      "isbn": "some-isbn",
+                                                      "title": "some-title",
+                                                      "author": "some-author",
+                                                      "publicationYear": 2001,
+                                                      "availableCopies":-1
+                                                    }                                                    
+                                                    """))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.availableCopies", is("availableCopies must be positive")))
+                    .andExpect(content().contentType(APPLICATION_JSON));
+        }
+
+
+        @Test
+        void whenBookAvailableCopiesIsZero() throws Exception {
+            when(libraryManagementService.addBook(book)).thenReturn(true);
+
+            mvc.perform(
+                            post("/api/books")
+                                    .contentType(APPLICATION_JSON)
+                                    .content(
+                                            """
+                                                    {
+                                                      "isbn": "some-isbn",
+                                                      "title": "some-title",
+                                                      "author": "some-author",
+                                                      "publicationYear": 2001,
+                                                      "availableCopies":0
+                                                    }                                                    
+                                                    """))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.availableCopies", is("availableCopies must be positive")))
+                    .andExpect(content().contentType(APPLICATION_JSON));
+        }
+
 
         @Test
         void whenBookIsPresent() throws Exception {
