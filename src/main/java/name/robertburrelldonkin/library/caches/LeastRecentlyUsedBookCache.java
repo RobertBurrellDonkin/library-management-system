@@ -1,6 +1,9 @@
 package name.robertburrelldonkin.library.caches;
 
+import name.robertburrelldonkin.library.LibraryApplication;
 import name.robertburrelldonkin.library.domain.Book;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,6 +13,8 @@ import java.util.Optional;
  * Simple thread safe LRU cache.
  */
 public class LeastRecentlyUsedBookCache implements BookCache {
+
+    private final Logger logger = LoggerFactory.getLogger(LeastRecentlyUsedBookCache.class);
 
     /**
      * LinkedHashMap is not thread safe.
@@ -23,17 +28,21 @@ public class LeastRecentlyUsedBookCache implements BookCache {
 
     @Override
     public synchronized void invalidate(String isbn) {
+        logger.debug("Invaliding {}", isbn);
         this.cache.remove(isbn);
     }
 
     @Override
     public synchronized void add(Book book) {
+        logger.debug("Caching book {}", book);
         this.cache.put(book.isbn(), book);
     }
 
     @Override
     public synchronized Optional<Book> get(String isbn) {
-        return Optional.ofNullable(this.cache.get(isbn));
+        final var optionalBook = Optional.ofNullable(this.cache.get(isbn));
+        optionalBook.ifPresent(book -> logger.debug("Hit cache for book {}", book));
+        return optionalBook;
     }
 
     /**

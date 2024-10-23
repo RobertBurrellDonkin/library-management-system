@@ -5,7 +5,7 @@ import java.util.Random;
 import static name.robertburrelldonkin.library.domain.Book.aBook;
 
 /**
- * Test data builder pattern TODO
+ * Test data builder pattern
  */
 public class BookTestDataBuilder {
 

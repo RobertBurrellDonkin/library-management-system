@@ -17,11 +17,6 @@ import static name.robertburrelldonkin.library.domain.Book.aBook;
  */
 public class Library implements LibraryManagementService {
 
-    /**
-     * Books indexed by unique ISBN.
-     * ConcurrentSkipListMap is efficient but weakly consistent. TODO
-     * A front side cache could be used to optimize slower searches.
-     */
     private final ConcurrentMap<String, LibraryBook> books = new ConcurrentSkipListMap<>();
 
     @Override

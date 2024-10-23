@@ -13,7 +13,9 @@ import javax.crypto.SecretKey;
 import java.security.PublicKey;
 import java.util.Optional;
 
-
+/**
+ * Authenticates a signed JWT.
+ */
 public class JwtTokenAuthenticator implements TokenAuthenticator {
 
     private final Logger logger = LoggerFactory.getLogger(JwtTokenAuthenticator.class);
