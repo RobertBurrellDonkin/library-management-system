@@ -104,7 +104,7 @@ public class LibraryApplication implements WebMvcConfigurer {
      * Only RSA based public keys generated in Java have been tested.
      * SecretKeys and other algorithms are supported by the implementation.
      *
-     * @param algorithm the Java standard name for the algorithm used to generate the public key, or null
+     * @param algorithm        the Java standard name for the algorithm used to generate the public key, or null
      * @param publicKeyEncoded the public key encoded in Base64 format, or null
      * @return when both parameters are not empty then a validator that verifies signed JWT tokens using the given
      * public key, otherwise a reject all authenticator
@@ -112,7 +112,7 @@ public class LibraryApplication implements WebMvcConfigurer {
     @Bean
     public TokenAuthenticator tokenAuthenticator(
             @Value("${app.security.jwt.algorithm:}") final String algorithm,
-            @Value("${app.security.jwt.public-key:}") final String publicKeyEncoded)  {
+            @Value("${app.security.jwt.public-key:}") final String publicKeyEncoded) {
         if (isEmpty(algorithm) || isEmpty(publicKeyEncoded)) {
             logger.warn("Public key and algorithm must be configure to support JWT. Disabling authentication.");
             return token -> Optional.empty();
@@ -120,7 +120,7 @@ public class LibraryApplication implements WebMvcConfigurer {
 
         try {
             final PublicKey publicKey = KeyFactory.getInstance(algorithm)
-                   .generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(publicKeyEncoded)));
+                    .generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(publicKeyEncoded)));
             logger.info("JWT Validated With:\n{}", publicKey.toString());
             return new JwtTokenAuthenticator(publicKey);
         } catch (InvalidKeySpecException | NoSuchAlgorithmException e) {

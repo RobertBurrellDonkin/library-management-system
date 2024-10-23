@@ -461,7 +461,7 @@ class LibraryApplicationJwtTests {
 
         private void setAuthorizationHeaders(HttpHeaders httpHeaders) {
             httpHeaders.addAll(AUTHORIZATION, List.of(
-                    "Bearer InvalidToken" ,
+                    "Bearer InvalidToken",
                     "Bearer " + token,
                     "Basic SomeBasicAuth"
             ));

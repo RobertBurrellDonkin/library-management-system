@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Objects.nonNull;
-import static java.util.stream.StreamSupport.stream;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
