@@ -105,9 +105,7 @@ public class BooksController {
         final Map<String, String> errors = new HashMap<>();
         methodArgumentNotValidException
                 .getFieldErrors()
-                .forEach(fieldError -> {
-                    errors.put(fieldError.getField(), fieldError.getDefaultMessage());
-                });
+                .forEach(fieldError -> errors.put(fieldError.getField(), fieldError.getDefaultMessage()));
         return errors;
     }
 

@@ -1,6 +1,5 @@
 package name.robertburrelldonkin.library.caches;
 
-import name.robertburrelldonkin.library.LibraryApplication;
 import name.robertburrelldonkin.library.domain.Book;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
