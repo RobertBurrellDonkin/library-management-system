@@ -58,11 +58,13 @@ public class LibraryApplication implements WebMvcConfigurer {
             @Value("${app.security.authentication}") final boolean authentication,
             final HttpSecurity http
     ) throws Exception {
-
-
         http
+                // TODO: Disable basic auth
+                .httpBasic(AbstractHttpConfigurer::disable)
                 // Cross-Site Request Forgery protection is appropriate only for microservices with a user interface
                 .csrf(AbstractHttpConfigurer::disable)
+                // TODO:
+                .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         registry -> {
                             if (authentication) {
@@ -73,6 +75,8 @@ public class LibraryApplication implements WebMvcConfigurer {
                                 registry.anyRequest().permitAll();
                             }
                         });
+
+
         return http.build();
     }
 
