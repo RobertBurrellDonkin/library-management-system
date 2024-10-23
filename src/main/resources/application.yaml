@@ -10,3 +10,6 @@ app:
       load-factor: 0.75
   api:
     max-concurrent-requests: 10
+
+  security:
+    authentication: true

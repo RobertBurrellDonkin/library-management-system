@@ -134,7 +134,8 @@ standard JWT implementation would rest on a lot of assumptions.
     * Profiles are likely to be an attractive option.
     * "jwt" and "unrestricted" profiles 
 * I'll need to get around to documenting the configuration at some stage.
-
+* Added configuration property to switch auth on and off. Added no authentication profile to 
+allow manual and automated testing.
 
 
 
