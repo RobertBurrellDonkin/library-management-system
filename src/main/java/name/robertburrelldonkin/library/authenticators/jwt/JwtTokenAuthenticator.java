@@ -18,7 +18,9 @@ public class JwtTokenAuthenticator implements TokenAuthenticator {
 
     private final Logger logger = LoggerFactory.getLogger(JwtTokenAuthenticator.class);
 
-    /** Thread safe */
+    /**
+     * Thread safe
+     */
     private final JwtParser jwtParser;
 
     public JwtTokenAuthenticator(PublicKey publicKey) {

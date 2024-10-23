@@ -1,6 +1,5 @@
 package name.robertburrelldonkin.library;
 
-import io.jsonwebtoken.Jwts;
 import name.robertburrelldonkin.library.authenticators.TokenAuthenticator;
 import name.robertburrelldonkin.library.authenticators.TokenExtractor;
 import name.robertburrelldonkin.library.authenticators.TokenPreAuthenticationFilter;
@@ -21,7 +20,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
@@ -30,15 +28,11 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.Objects.nonNull;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 import static org.springframework.util.ObjectUtils.isEmpty;
 

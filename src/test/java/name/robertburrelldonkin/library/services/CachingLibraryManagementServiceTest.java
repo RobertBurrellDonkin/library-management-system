@@ -14,7 +14,7 @@ import java.util.Optional;
 import static java.util.Optional.empty;
 import static name.robertburrelldonkin.library.domain.BookTestDataBuilder.createABook;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

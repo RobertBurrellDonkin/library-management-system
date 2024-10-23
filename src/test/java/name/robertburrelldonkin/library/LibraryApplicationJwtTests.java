@@ -1,6 +1,5 @@
 package name.robertburrelldonkin.library;
 
-import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -9,11 +8,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
-
-import java.security.KeyFactory;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
 
 import static name.robertburrelldonkin.library.authenticators.jwt.JwtTokenBuilder.createAValidToken;
 import static name.robertburrelldonkin.library.authenticators.jwt.JwtTokenBuilder.createAnExpiredToken;
@@ -209,7 +203,7 @@ class LibraryApplicationJwtTests {
         String token;
 
         @BeforeEach
-        void setUp()  {
+        void setUp() {
             token = createAValidToken();
         }
 

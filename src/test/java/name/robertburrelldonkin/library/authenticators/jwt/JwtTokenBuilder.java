@@ -8,13 +8,10 @@ import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
 
 import static java.time.temporal.ChronoUnit.DAYS;
-import static java.time.temporal.ChronoUnit.YEARS;
 
 public class JwtTokenBuilder {
 
@@ -47,7 +44,7 @@ public class JwtTokenBuilder {
                 .compact();
     }
 
-    private static PrivateKey getPrivateKey()  {
+    private static PrivateKey getPrivateKey() {
         final PrivateKey privateKey;
         try {
             privateKey = KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(DECODED_PRIVATE_KEY));

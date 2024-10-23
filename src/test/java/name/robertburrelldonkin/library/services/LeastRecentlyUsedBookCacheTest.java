@@ -6,12 +6,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static name.robertburrelldonkin.library.domain.BookTestDataBuilder.createRandomBook;
-
 import java.util.Optional;
 
+import static name.robertburrelldonkin.library.domain.BookTestDataBuilder.createRandomBook;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 
 class LeastRecentlyUsedBookCacheTest {
 

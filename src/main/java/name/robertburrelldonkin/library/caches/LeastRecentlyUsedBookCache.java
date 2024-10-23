@@ -40,9 +40,10 @@ public class LeastRecentlyUsedBookCache implements BookCache {
      * Not thread safe.
      */
     private static final class Cache extends LinkedHashMap<String, Book> {
-        private final int maxSize ;
+        private final int maxSize;
+
         private Cache(final int maxSize, int initialCapacity, float loadFactor) {
-            super(initialCapacity, loadFactor,  true);
+            super(initialCapacity, loadFactor, true);
             this.maxSize = maxSize;
         }
 

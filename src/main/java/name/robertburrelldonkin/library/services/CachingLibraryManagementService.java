@@ -8,6 +8,7 @@ import java.util.Optional;
 public class CachingLibraryManagementService extends AbstractDelegateLibraryManagementService {
 
     private final BookCache bookCache;
+
     public CachingLibraryManagementService(LibraryManagementService delegate, BookCache bookCache) {
         super(delegate);
         this.bookCache = bookCache;
