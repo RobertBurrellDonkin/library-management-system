@@ -423,6 +423,8 @@ copies are available.
   discussed in the final section *Available Copies - Compare And Swap*.
 
 ### API Design Details
+* A reactive design was considered but in the spirit of a Lean Proof of Concept, opted 
+for less complex and less efficient initial approach.
 * The API design 
   * generally follows the style of Java collections
   * whilst taking advantage of `Optional` to avoid nulls.
@@ -434,32 +436,41 @@ copies are available.
     the check and the borrowBook call should this exception be thrown. 
     * (The boolean returned indicates that the book is not present in the library.)
 
-# RESTful API
-* REST design TODO (see notes)
-* Considered a reactive design but reject
-* POST -> created
-    * There isn't a clear consensus around the right HTTP status code to return when a resource already exist,
-      Let's return 409.
-* DELETE -> ok or not found
-* Let's consider find by author to be a search for a resource uniquely indexed by ISBN. This will
-  return a list of books.
-* borrowBook and returnBook are operations performed on a resource which have no easy mapping to
-  to CRUD verbs.
-    * PATCH isn't really suitable since we're just asking for an update
-    * The results really isn't cachable and isn't idempotent
-    * Probably best modelled as a POST. One option might be to use JSON but the data model
-      doesn't seem rich enough to justify the extra complexity of a JSON model.
-    * Let's assume that a POSTing to path param is reasonable
-    * From an APi perspective, it feels like the client may really want the current book
-      details, and perhaps that the updated details should be returned in the body.
-      We'll keep the API simple for now, though.
+# RESTful API Design Notes
+* Aims to follow closely to REST principals and the consensus about RESTful web services.
+  * Use HTTP status code to indicate success or failure scenarios
+    * In some failure scenarios - for example validation - additional details are
+    returned as JSON to aid in troubleshooting.
+    * Aim to stick to a limited palette applied consistently.
+* JSON seems the natural choice for a Lean Proof of Concept. 
+  * XML would have been reasonable but would have entailed more overhead.
+* Book seems the natural resource. `/books` is the conventional path.
+* Grouping all APIs under a path, separate from 
+potential instrumentation paths, makes security and auditing more convenient.
+  * Let's assume all microservice apis are rooted at `/api` which means the book API will be
+  `/api/books`.
+* Versioning APIs is definitely worthwhile but there are many variations. For simplicity in the spirit of Lean
+Proof of Concept, I opted against include it.
 
-* End To End test - just the golden path
-* Let's assume all attributes are required and that available copies and publication year must be positive.
-* 409 CONFLICT ->
-    * The client should GET the book before trying to borrow. If the book has been subsequently borrowed then the client
-      state is in conflict with the server state. The client should retry the GET to discover when a copy has been
-      returned/
+## AddBook
+ * If a book is already present, AddBook should return an error. There is no clear
+consensus around the best HTTP code to return in circumstances such as this. 
+   * `409 CONFLICT` is one common choice and using it would not be inconsistent, which 
+is why it was picked.
+   * The rest of the API should adopt this pattern for consistency.
+
+## BorrowBook and ReturnBook
+* These are operations performed on a resource with domain semantics, as opposed to 
+CRUD which match well to HTTP verbs.
+  * PATCH would be the closest verb but the semantics would be too distinctly different.  
+  * These operations are not idempotent and should not be cached or repeated.
+  * POST is pretty much the only reasonable option. And this is commonly used for operations.
+* In an event driven architecture, these might fit into the event paradigm with a JSON
+payload posted to an endpoint. I feel that this would be too inconsistent with 
+the other bits of the API for just two actions.
+  * Evolving from REST to an event driven approach might happen at some stage.
+* The best option seemed to be following the pattern of POSTing to operation endpoints
+rooted in the resource.
 
 ## Configuration
 
