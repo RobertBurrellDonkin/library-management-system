@@ -385,7 +385,20 @@ system is used will only be known once it is in use in production.
 * Given our assumptions, retrieval operations by key (borrow, return and find by ISBN) are
 expected to occur with far greater frequency than traversals (find by author), insertions (add book)
 and deletions (remove book). 
-  * Synchronising every method or the entire map would be less efficient than using a concurrent map class.
+  * Synchronising every method or the entire map would be inefficient in these circumstances.
+* We need to consider whether to trade *strong consistency* for efficiency.
+  * We are assuming that read operations on the map (get by key and traversals) are far more 
+  common than write operations (insertions and deletions).
+  * A *strongly consistent* solution would need to lock out reads during writes. This locking
+  overhead would be paid on every read.
+  * A *weakly consistent* solution would trade off some stale reads for less overhead per read.
+  * Let's assume that allowing *weak consistency* is an acceptable starting point for a Lean 
+  Proof of Concept.
+  * The Library design adopted is based on a ConcurrentSkipListMap which is an efficient but 
+  weakly consistent thread safe map. 
+* Searches by ISBN will retrieve data by key and are expected to be efficient. 
+  * Given our assumptions, it is reasonable to accept a slow traversal for the search by author.
+    * We have the option of adding in a front side cache for search results.
 * For a small library with a few books then a set or list. Let's assume that the library
   management system should support large numbers of books whilst providing an efficient
   find by unique attribute (ISBN). Based on a Map.
