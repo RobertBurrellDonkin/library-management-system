@@ -5,6 +5,9 @@ import name.robertburrelldonkin.library.domain.Book;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Manages books in a library.
+ */
 public interface LibraryManagementService {
     /**
      * Adds a book to the library when it is not already present.

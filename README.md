@@ -423,31 +423,16 @@ copies are available.
   discussed in the final section *Available Copies - Compare And Swap*.
 
 ### API Design Details
-* Until
-  business logic TODO let's assume that the library should just reject.
-    * We could throw an exception or use a return value. The principle of least surprise
-      leans towards throwing an explicit exception.
-    * Java Set return a value from add, whilst throwing an IllegalArgumentException in the case
-      of validation. Consistency with Java collection leans towards returning a value.
-    * Let's go with consistency for the moment.
-* For consistency with Java collections, removeBook will return a boolean
-* Let's opt to keep the library code more readable and maintainable by making the Book domain
-  object thread safe. Book will need to be final to indicate that subclassing is not recommended.
-  We could have opted for value objects and an internal implement but that would have added
-  a lot of complexity.
-    * Due to differences across hardware, not practical to create a unit test that reliable demonstrates
-      concurrency issues. We would need to augment the unit and integrate tests with end to end testing
-      on a like-live system.
-    * For consistency with AtomicInteger, book will return the number of available copies
-* There is the question of the case of decrementing a book when it has no copies. Let's assume
-  that we should apply business logic to prevent borrowing books when there are no copies in the
-  library.
-    * And domain logic that the number of available copies must be a positive integer or zero.
-* Borrow book will return a boolean for consistency. Need to think about behaviour when there are no copies.
-  Let's push on for now.
-* If we want to be able to apply business logic around borrowing, we'll need to stop the internal
-  representation escaping. So we'll need to switch a record and an internal representation.
-* Before pushing on to create a cache, let's extract an interface.
+* The API design 
+  * generally follows the style of Java collections
+  * whilst taking advantage of `Optional` to avoid nulls.
+  * As with Java collections, booleans are returned to indicate whether an operation has failure or succeeded
+  * The only anticipated exception is thrown by borrowBook when there are no copies available
+    * It is intended that calls should first check by a call to `findBookByISBN` that there are
+    copies available.
+    * Only under the exceptional circumstance that another caller borrow in the window between
+    the check and the borrowBook call should this exception be thrown. 
+    * (The boolean returned indicates that the book is not present in the library.)
 
 # RESTful API
 * REST design TODO (see notes)
