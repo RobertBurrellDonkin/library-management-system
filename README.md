@@ -2,30 +2,31 @@
 
 ## Overview
 
-A Spring Boot 3 microservice with both bonuses -
+A `Spring Boot 3` microservice including both bonuses:
 
-* Basic rate limiter based on concurrent request
-* Simple JWT authentication based on Spring Security supporting tokens signed using asymmetric cryptography
+* a basic rate limiter for concurrent HTTP requests, and
+* a simple JWT authentication mechanism integrated with Spring Security which supports tokens signed using asymmetric cryptography
 
-Assuming that the **Java 8+** specified includes later version and noting that
+Noting that
 
 * Java 8 is now end of life,
 * has known security vulnerabilities,
 * and is not supported by SpringBoot 3
 
-this solution requires Java 17. It is expected to run on later versions but has only been tested on Java 17.
+this solution requires Java 17 and assumes that the **Java 8+** specified includes later versions of Java. 
+It is expected to run on later versions but has only been tested on Java 17.
 
 This document tries to keep close to the structure outlined in the submission instructions.
 
 ## How To Run
 
-The solution is a conventional Spring Boot 3 microservice and can be run in the usual way. Profiles are used to allow
+The solution is a conventional `Spring Boot 3` microservice and can be run in the usual way. Profiles are used to allow
 authentication variations.
 
-By default, the microservice will start on port 8080 but this can be changed using the usual mechanisms
+By default, the microservice will start on port `8080` but this can be changed using the usual mechanisms
 
-**Please note** that for security reasons, `mvn spring-boot:run` without a profile will forbid all requests. It is
-recommended that either the `insecure` or `secure` profile should be active. See JWT below for details.
+**Please note** that for security reasons, executing `mvn spring-boot:run` without a profile will forbid all requests. It is
+recommended that either the `insecure` or `secure` profile should be active. See below for details.
 
 ### Without JWT Authorization
 
@@ -39,27 +40,27 @@ Running this profile is the recommended starting point.
 
 ### With JWT Authorization
 
-The ``secure`` profile includes a sample public key which private key is used in integration tests.
+The ``secure`` profile includes a sample public key (whose private key is used in integration tests).
 
 ```
 $ mvn spring-boot:run -Dspring-boot.run.profiles=secure
 ```
 
-The following Authorization HTTP Header with a JWT bearer token allows authorized access when running this profile.
-
+A convenient way authorize access whilst running this profile is to add the follow HTTP Header
 ```
 Authorization: Bearer eyJhbGciOiJSUzUxMiJ9.eyJzdWIiOiJhZG1pbiJ9.J7apSRgAlXDZjZ1kY1K4GRhjn1ikq3qSQrGJy7P6d5wSxBcs27CbWfF8alJmffpXUsuM2WQbAHsCbzG6Httd1K8sYBE1TCakOPT84fg-BzAIPMVxtpGc9Mtv_tSj_QYb96atZJjjtkobKlyGz4t2LIU10ZyN55QQIN2pHKuMkpnKGEKTlCYAzBFFC7NzAPBtPyJXt7Thl1oC-ChHBBeKEWE--cifLRyFDru3G6o-r5ud5hpgM7rCV3AGICRUppvZoZxdMRb94ECuhCzveEbY9fEMKCeWQKlIC4DNppxzVkXQ6NYjZnhx-S9FuVaTtJgotZPdy3yxLru9LGRUIJk1TTOF08zP1dbvKX4QDac7_3YqLkCCLMy_gRRI71rqypnbZkh5R5r1_S-Rv9m5B9IA7c-kBc3NnAZ_oAjF2YGlL1QotbkF1lr7XBkFT4OHgKqRukiwiWjUMURyexxel_y8iL06_GB9LgyvWiYpckdfWJK9_yXE_q4sJXuMTAODND5FPX7KfqYJjg3Ok5uqGkor3ZEDDj9Bbm2tx-uLO4SC56HxSwcuEVwBxdHqYrEKL-99EcgIKaZrrXLjtBgtSP2PuhJxFpzEzu7aEro534p4VO3ySfjG8s-2GMEzbUirx15MSlaiizi7mdPqbWvBNS2rGzXmUELjsjt_z9ve5KiILW4
 ```
 
-Alternatively, JwtTokenBuilder generates suitable JWT tokens for the integration tests, and could be used to generate
+Alternatively, `JwtTokenBuilder` generates suitable JWT tokens for the integration tests, and could be used to generate
 tokens with other claims.
 
-Note that this solution authenticates using sighed JWT bearer tokens but does not include authorization.
-Full access is permitted to all subjects.
+**Note** that this solution **authenticates** using sighed JWT bearer tokens but **does not** include **authorization**.
+Full access is permitted to all subjects. It is integrated with Spring Security and could be developed into a more comprehensive solution 
+in the usual fashion.
 
 ## RESTful API
 
-The library books API endpoints are based at http://localhost:8080/api/books
+The library books API endpoints are rooted at http://localhost:8080/api/books
 
 ### Book Data Structure
 
@@ -67,13 +68,13 @@ Books are modelled as JSON objects:
 
 * **Structure**
 
-| Attribute         | Type   | Required | Constraints | 
-|-------------------|--------|----------|-------------|
-| `isbn`            | string | Yes      |             |
-| `title`           | string | Yes      |             |
-| `author`          | string | Yes      |             |
-| `publicationYear` | number | Yes      | Positive    |
-| `availableCopies` | number | Yes      | Positive    |
+| Attribute         | Type   | Required | Constraints        | 
+|-------------------|--------|----------|--------------------|
+| `isbn`            | string | Yes      |                    |
+| `title`           | string | Yes      |                    |
+| `author`          | string | Yes      |                    |
+| `publicationYear` | number | Yes      | Positive Integer   |
+| `availableCopies` | number | Yes      | Positive Integer   |
 
 * **Example**
 
