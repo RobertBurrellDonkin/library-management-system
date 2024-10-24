@@ -361,11 +361,31 @@ others.
   * For the purpose of this exercise, we'll need to make some assumptions to make progress.
 * A **Lean Proof of Concept** would be one suitable use case for the Library class described.
   * In this case, we might look to trade off some architectural qualities such as horizontal scalability
-  and elasticity for time to initial delivery into production. Development of solutions with improved
+  and elasticity for reduced time to initial delivery into production. Development of solutions with improved
   elasticity and horizontal scalability would be on the future roadmap but could be informed 
   by data collected from this initial delivery.
   * Let assume that this microservice will be such a **Lean Proof of Concept** and be deployed
   as a singleton microservice on a capable instance.
+* Data flow is an important to consider when designing concurrent solutions. Often how a 
+system is used will only be known once it is in use in production. 
+  * A Lean Proof of Concept based on some reasonable assumptions can be delivered into 
+  production early and monitoring use to quantify the requirements.
+  * Let's assume that 
+    * books will 
+        * be added and remove relatively rarely and
+        * be borrowed and returned more frequently, 
+    * and that searches 
+      * by ISBN will be common, and
+      * by Author uncommon,
+    * and that there will be a large number of books in the library.
+* Borrowing and returning are based on ISBN. 
+  * Given our assumption that these operations occur much more frequently than addition and removal,
+  we should trade in favour of retrieval by ISBN at the price of insertion and deletion.
+  * We will base Library on a Map indexed by ISBN.
+* Given our assumptions, retrieval operations by key (borrow, return and find by ISBN) are
+expected to occur with far greater frequency than traversals (find by author), insertions (add book)
+and deletions (remove book). 
+  * Synchronising every method or the entire map would be less efficient than using a concurrent map class.
 * For a small library with a few books then a set or list. Let's assume that the library
   management system should support large numbers of books whilst providing an efficient
   find by unique attribute (ISBN). Based on a Map.
