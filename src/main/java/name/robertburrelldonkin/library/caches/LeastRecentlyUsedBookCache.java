@@ -45,7 +45,7 @@ public class LeastRecentlyUsedBookCache implements BookCache {
     }
 
     /**
-     * Specialises LinkedHashMap to move the eldest entry (by access order) whenever the number of
+     * Specialises LinkedHashMap to remove the eldest entry (by access order) whenever the number of
      * cached books exceeds the configured max size.
      * Not thread safe.
      *

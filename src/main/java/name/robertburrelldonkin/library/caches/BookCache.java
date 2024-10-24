@@ -11,12 +11,14 @@ public interface BookCache {
 
     /**
      * Clears the cached version for this book.
+     *
      * @param isbn not null
      */
     void invalidate(String isbn);
 
     /**
      * Caches the given book.
+     *
      * @param book not null
      */
     void add(Book book);

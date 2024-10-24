@@ -28,8 +28,9 @@ public class BooksController {
      * Adds a book to the library.
      *
      * @param book not null
-     * @return 201 when the book has been successfully added,
-     * 409 when the book already exists
+     * @return 201 CREATED when the book has been successfully added,
+     * 400 BAD REQUEST when the book data is invalid,
+     * 409 CONFLICT when the book already exists
      */
     @PostMapping
     public ResponseEntity<String> addBook(@Valid @RequestBody Book book) {
@@ -40,8 +41,8 @@ public class BooksController {
      * Removes a book from the library.
      *
      * @param isbn not null
-     * @return 200 when the book has been successfully removed,
-     * 404 when a book with the given isbn is not in the library
+     * @return 200 OK when the book has been successfully removed,
+     * 404 NOT FOUND when a book with the given isbn is not in the library
      */
     @DeleteMapping("/{isbn}")
     public ResponseEntity<String> removeBook(@PathVariable String isbn) {
@@ -52,8 +53,8 @@ public class BooksController {
      * Gets details about a book from the library.
      *
      * @param isbn not null
-     * @return 200 when the book is in the library
-     * 404 when a book with the given isbn is not in the library
+     * @return 200 OK when the book is in the library
+     * 404 NOT FOUND when a book with the given isbn is not in the library
      */
     @GetMapping("/{isbn}")
     public ResponseEntity<Book> findBookByISBN(@PathVariable String isbn) {
@@ -79,8 +80,9 @@ public class BooksController {
      * Borrows a book from the library.
      *
      * @param isbn not null
-     * @return 200 when the book has been successfully borrowed,
-     * 404 when a book with the given isbn is not in the library
+     * @return 200 OK when the book has been successfully borrowed,
+     * 404 NOT FOUND when a book with the given isbn is not in the library,
+     * 409 CONFLICT when there are no available copies
      */
     @PostMapping("/{isbn}/borrow")
     public ResponseEntity<String> borrowBook(@PathVariable String isbn) {
@@ -91,15 +93,15 @@ public class BooksController {
      * Returns a book from the library.
      *
      * @param isbn not null
-     * @return 200 when the book has been successfully returned,
-     * 404 when a book with the given isbn is not in the library
+     * @return 200 OK when the book has been successfully returned,
+     * 404 NOT FOUND when a book with the given isbn is not in the library
      */
     @PostMapping("/{isbn}/return")
     public ResponseEntity<String> returnBook(@PathVariable String isbn) {
         return new ResponseEntity<>(libraryManagementService.returnBook(isbn) ? OK : NOT_FOUND);
     }
 
-    @ResponseStatus(value = BAD_REQUEST)
+    @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException methodArgumentNotValidException) {
         final Map<String, String> errors = new HashMap<>();

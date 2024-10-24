@@ -13,7 +13,19 @@ import static java.util.Objects.nonNull;
 import static name.robertburrelldonkin.library.domain.Book.aBook;
 
 /**
- * Thread safe library management service.
+ * <p>Thread safe library management service.
+ * </p>
+ * <p>Based on weakly consistent ConcurrentSkipListMap which indexed books by ISBN.</p>
+ * <ul>
+ *     <li>Operations by ISBN are expected to be efficient.</li>
+ *     <li>Addition and removal less so.</li>
+ *     <li>Traversals (including searches by author) are expected to be slow. An upstream
+ * cache by author should be considered.</li>
+ * </ul>
+ * <p>
+ *     BorrowBook and ReturnBook mutate the internal LibraryBook representation using non-blocking
+ *     algorithms after retrieval by ISBN. This is expected to be efficient under most realistic loads.
+ * </p>
  */
 public class Library implements LibraryManagementService {
 

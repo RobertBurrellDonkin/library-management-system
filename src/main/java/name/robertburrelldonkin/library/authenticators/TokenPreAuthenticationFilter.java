@@ -45,9 +45,10 @@ public class TokenPreAuthenticationFilter extends AbstractPreAuthenticatedProces
     }
 
     /**
-     * Always returns a dummy value.
+     * Always returns a dummy value (as required when credentials are not supported).
      * Credentials are not expected to be supplied in the token.
-     * In cases where credentials are not supplied, a dummy value should be returned.
+     * Should a token contain credentials, there is no need for this microservice to know them
+     * and for security reasons they should not be pass on to the Spring Security filter chain.
      *
      * @param request not null
      * @return empty string ""

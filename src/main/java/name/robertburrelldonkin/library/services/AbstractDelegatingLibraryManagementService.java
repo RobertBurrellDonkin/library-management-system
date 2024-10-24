@@ -5,10 +5,10 @@ import name.robertburrelldonkin.library.domain.Book;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class AbstractDelegateLibraryManagementService implements LibraryManagementService {
+public abstract class AbstractDelegatingLibraryManagementService implements LibraryManagementService {
     private final LibraryManagementService delegate;
 
-    public AbstractDelegateLibraryManagementService(LibraryManagementService delegate) {
+    public AbstractDelegatingLibraryManagementService(LibraryManagementService delegate) {
         this.delegate = delegate;
     }
 

@@ -24,7 +24,6 @@ class BearerTokenExtractorTest {
 
     BearerTokenExtractor bearerTokenExtractor = new BearerTokenExtractor();
 
-
     @Nested
     class ExtractToken {
         @Test
