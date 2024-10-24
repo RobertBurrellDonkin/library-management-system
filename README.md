@@ -501,19 +501,17 @@ copies are available.
 is available from production.
 
 ## Basic Rate Limits
-
-* Design discussion around rate limiter.
-    * For rate limiting the services, a delegate or perhaps AOP annotations would have been an elegant solution.
+  * For rate limiting the services, a delegate or perhaps AOP annotations would have been an elegant solution.
     * We could limit the endpoints indirectly by rate limiting the services in this fashion but
-      a more direct approach would seem more natural.
-    * Opt for a HandlerInterceptors for the end points until /api/books
-    * There are different ways rate limits might be accomplished but we'll opt for a RESTful
+          a more direct approach would seem more natural.
+  * Opt for a HandlerInterceptors for the end points until /api/books
+  * There are different ways rate limits might be accomplished but we'll opt for a RESTful
       approach and return an appropriate HTTP code when the rate is beyond the limit.
-    * Thinking about what we are limiting, there are several reasonable interpretations
-        * we could limit the number of concurrent requests in flight
-        * or limit the number of requests within a time period
-    * Limiting concurrent requests protects the but is more friendly to clients. Let's assume that
-      billing isn't related to rate limiting and limit concurrent requests.
+  * Thinking about what we are limiting, there are several reasonable interpretations
+      * we could limit the number of concurrent requests in flight
+      * or limit the number of requests within a time period
+  * Limiting concurrent requests protects the but is more friendly to clients. Let's assume that
+    billing isn't related to rate limiting and limit concurrent requests.
 
 ## Simple JWT Authentication
 
