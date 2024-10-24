@@ -300,20 +300,35 @@ where
 
 # Assumptions And Design Decisions
 
-## Versions
-* Java 8 is now end of life, has known security vulnerability
-  and is not supported by SpringBoot 3. The language used is consistently
-  **Java 8+** (rather than **Java 8**). 
-  * **Let's assume Java 17 is an acceptable compromise.**
+## System Requirements
+### Java 
+  * is now end of life (as is Spring Boot 2), 
+  * has known security vulnerabilities,
+  * and is not supported by SpringBoot 3. 
+* The language the spec uses is consistently **Java 8+** (rather than **Java 8**). 
+    * **Let's assume Java 17 is acceptable.**
 
 ## Organisation
-* Let's assume that library is intended to be reused at the microservice level by
-  calling the RESTful API, rather than as a Java library. So no need for a multi-module
-  set up.
-* This project may well be too small to justify this, but I like to organise using packages.
-* I'm from the minimal comments school of thought but the spec has
-* Looking ahead
-* Going be relying on equals to have domain meaning so let's test
+### Project Layout
+* Let's assume that this solution is intended to be deployed as a component within 
+a system of **collaborating microservices** perhaps orchestrated by Kubernetes on 
+a service mesh such as Istio. 
+  * In this sort of **microservices architecture**, domain logic and functionality will
+  be reused at the microservices level (rather than the library level). In this case,
+  by calling the RESTful endpoints, as opposed to import library code. 
+* A multi-module project isn't needed for a thin microservice such as this,
+  and we do not expect other projects to depend on code from this project. 
+* We'll adopt a single module project design.
+* Consistency is important when maintaining projects within a finely
+grained microservice architecture. Developers without recent familiarity
+with a particular project need to be able to get up to speed quickly. 
+Consistency in packaging conventions facilities this process.
+  * Let's assume that these conventions are reasonably standard with a slight
+  bias towards a flatter structure.
+  * I lead towards a finely grained microservice architecture. Overly deep package structures
+  indicating overly complex microservice may be a *code smell* highlighting
+  a microservice which has drift from the path of single responsibility and
+  a system which is failing to appropriately separate concerns.
 
 ## Domain
 * We could model Book as a value object using a Record. This lends itself to an
