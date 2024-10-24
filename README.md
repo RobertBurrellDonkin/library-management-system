@@ -511,21 +511,21 @@ An empty **POST** to a path based on the resource feels more RESTful and so that
 # Additional Features and Optimizations
 
 ## Caching Books
-Any cache has costs. Without a detailed understanding of the traffic, it is hard to know in advance
-whether caching would be worth the costs. Using dependency injection and following a write through cache
-pattern implementing a uniform interface allows caching to be added and remove by configuration changes.
-This approach would be well suited to spring profiles but time was against me.
+Searching by Author is likely to be slow, perhaps too slow for large libraries. A cache might be required
+at some stage but the spec talks about frequently accessed *books*. So let's assume that this problem 
+is likely out of scope.
 
-Searching by Author is likely to be slow, perhaps too slow for large libraries but would require a lot
-of assumptions to be made before it could be done well. The requirement talk about frequently accessed 
-books. So the search problem is likely out of scope.
+Any cache has costs. Without a detailed understanding of the traffic, it is hard to know in advance
+whether caching would be worth the costs. Following a write through cache pattern would allow caching
+to be added or removed by a configuration change. This seems a natural approach.
 
 Let's assume that it's acceptable to
  * cache a limited (but configurable) number of books by ISBN,
  * evicted least recently used books to make space, and
  * invalidate on write by evicting. 
 
-This leads naturally to a simple design based on a LRUCache. 
+This leads naturally to a simple design based on a injecting an LRUCache which implements the 
+library management services interface.
 
 ## Basic Rate Limits
 The API endpoints could be indirectly rate limited by throttling at the service layer. Perhaps by
@@ -550,46 +550,51 @@ This is a basic design. A long-lived microservice might need to consider leaks m
 
 ## Simple JWT Authentication
 
-* Good security design requires knowledge, both of the technologies and the context. A production
-  quality JWT implementation rests on many assumptions.
-* Let's assume that this API will be accessed by other microservices, and that these
-  microservices will be able to acquire JWT tokens independently.
-    * Perhaps from a third party service like Amazon Cognito, or
-    * by generating them.
-* Spring Boot 3 recommends Spring Security. Spring Security is complex and sophisticated.
-    * The spec does not explicitly include authorization. An approach based on using a
-      simple HTTP filter without integration with Spring Security would satisfy the base
-      requirements.
-    * Let's assume that authorization based on the subject of the token will be needed at
-      some later stage and go with a Spring Security based approach, accepting that it will
-      be complex.
-    * Given the assumption that tokens will be minted by some third party - rather than
-      by this microservice - in Spring Security terms we will be going down the PreAuthentication
-      route and should adopt the PreAuthentication framework, even though it might appear
-      a little unintuitive.
-* There are numerous ways that caller could supply JWT tokens. The conventional approach
-  for RESTful APIs is to pass the JWT token as a Bearer token in an HTTP AUTHORIZATION header.
-    * Let's assume that this approach is appropriate.
-* A JWT token consist of a payload and meta-data. The conventional design when JWT is used
-  for authentication is to use the payload to pass claims with a signature in the meta-data.
-    * Let's assume that this approach is appropriate.
-* JWT supports encryption to protect sensitive payloads. HTTPS would encrypt bearer tokens
-  together with the rest of the headers.
-    * Let's assume that the tokens will not be encrypted.
-* It is natural to map the Subject claimed by the token to the Spring Security
-  Principal, though not always correct.
-    * Let's assume that this is correct in this case.
-* JWT tokens typically include a claim about expiry. When present, these should be enforced.
-    * Let's adopt Postel's Law and permit JWT tokens with signed subjects who are
-      missing claims about expiry.
-* Given our assumption that authentication will be the responsibility of a third party,
-  we should pass dummy credentials to Spring Security rather than extract claims from the token.
-    * Even if the token includes credential claims, there is no need for these to be known by
+Good security design requires knowledge, both of the technologies and the context. A production
+quality JWT implementation rests on many assumptions.
+
+Let's assume that this API will be accessed by other microservices, and that these
+  microservices will be able to acquire JWT tokens independently. Perhaps from a third party service 
+  like Amazon Cognito, or perhaps by generating them.
+
+Spring Boot 3 comes with Spring Security which is both complex and sophisticated.
+
+The spec remains silent on authorization. An approach based on using a
+simple HTTP filter (without integration with Spring Security) would satisfy the base
+requirements. 
+
+Let's assume that authorization based on the subject of the token will be needed at
+some later stage and that integration with Spring Security is therefore worth the additional
+complexity. We assume that the JWT tokens will be issued by a third party (rather than this
+library management microservice). In Spring Security terms, this is we will be going down the PreAuthentication
+route and should adopt the PreAuthentication framework.
+
+There are numerous ways that caller could supply JWT tokens. The conventional approach
+for RESTful APIs is to pass the JWT token as a Bearer token in an HTTP AUTHORIZATION header. Let's assume that 
+this approach is appropriate.
+
+A JWT token consists of a payload and meta-data. The conventional design when JWT is used for authentication 
+is to use the payload for claims with a signature in the meta-data. Let's assume that this approach is appropriate.
+
+JWT supports encryption to protect sensitive payloads. HTTPS would encrypt bearer tokens together with the 
+rest of the headers and so encryption at the token level would not be needed. Let's assume that the tokens will 
+not be encrypted.
+
+It is natural to map the Subject claimed by the token to the Spring Security Principal, though not always correct. 
+Let's assume that this is correct in this case.
+
+JWT tokens typically include a claim about expiry. When present, these should be enforced. Let's adopt Postel's Law 
+and permit JWT tokens with signed subjects who are missing claims about expiry. 
+
+We assume responsibility for authentication lies with the third party. In this case, even if there are credential
+claims in the token, for security reasons we should pass dummy credentials to Spring Security rather than extract them
+from the token. Even if the token includes credential claims, there is no need for these to be known by
       this microservice.
-* JWT supports a wide range of signature algorithms, both symmetric (shared secret)
+
+JWT supports a wide range of signature algorithms, both symmetric (shared secret)
   and asymmetric (public-private key). Key distribution is a difficult problem, configuration
-  would be involved and extensive testing would be needed on a variety of platforms.
-    * As a compromise in the spirit of a lean proof of concept, the `secure` profile configures an RSA public key whose
+  would be involved and extensive testing would be needed on a variety of platforms. 
+As a compromise in the spirit of a lean proof of concept, the `secure` profile configures an RSA public key whose
       private key
       is included in the integration testing source code.
 
