@@ -485,11 +485,9 @@ Java 8
     * These operations are not idempotent and should not be cached or repeated.
     * POST is pretty much the only reasonable option. And this is commonly used for operations.
 * In an event driven architecture, these might fit into the event paradigm with a JSON
-  payload posted to an endpoint. I feel that this would be too inconsistent with
-  the other bits of the API for just two actions.
-    * Evolving from REST to an event driven approach might happen at some stage.
+  payload posted to an endpoint. This would seem out of character with other elements of the API. 
 * The best option seemed to be following the pattern of POSTing to operation endpoints
-  rooted in the resource.
+  with paths rooted at the resource.
 
 ## Configuration
 
