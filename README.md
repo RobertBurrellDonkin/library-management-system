@@ -478,11 +478,11 @@ Java 8
 * In a typical RESTful API, a search maps to a `GET` with appropriate query params.
 
 ## BorrowBook and ReturnBook
-CRUD endpoints map naturally to HTTP verbs. `BorrowBook` and `ReturnBook` execute domain specific operations on
-the state of a resource. They are not idempotent and cannot be safely cached or repeated. **POST** is the 
-only reasonable option in cases like this. 
+CRUD endpoints map naturally to HTTP verbs. `BorrowBook` and `ReturnBook` are not CRUD but execute domain 
+specific operations on the state of a resource. They are not idempotent and cannot be safely cached or repeated. 
+**POST** is the only reasonable option in cases like this. 
 
-An event driven architecture might model these operations as payloads. Adopting that style
+An event driven architecture might model these operations as particular payloads. Adopting that style
 would cut across the grain of the rest of this API. Which seems like a mistake.
 
 An empty **POST** to a path based on the resource feels more RESTful and so that was the design adopted.
