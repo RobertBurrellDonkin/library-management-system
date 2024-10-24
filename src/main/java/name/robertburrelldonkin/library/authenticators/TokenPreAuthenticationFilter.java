@@ -40,7 +40,7 @@ public class TokenPreAuthenticationFilter extends AbstractPreAuthenticatedProces
                 .map(Subject::name)
                 .findFirst()
                 .orElse(null);
-        logger.info("Principal is: {}", principal);
+        logger.debug("Principal is: {}", principal);
         return principal;
     }
 
