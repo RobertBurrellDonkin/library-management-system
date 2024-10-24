@@ -35,7 +35,7 @@ It is expected that the container would supply an appropriate authentication con
 The ``insecure`` profile permits all requests.
 
 ```
-$ mvn spring-boot:run -Dspring-boot.run.profiles=insecure
+mvn spring-boot:run -Dspring-boot.run.profiles=insecure
 ```
 
 Running this profile is the recommended starting point.
@@ -45,7 +45,7 @@ Running this profile is the recommended starting point.
 The ``secure`` profile includes a sample public key (whose private key is used in integration tests).
 
 ```
-$ mvn spring-boot:run -Dspring-boot.run.profiles=secure
+mvn spring-boot:run -Dspring-boot.run.profiles=secure
 ```
 
 A convenient way to authorize access is to add the follow header
