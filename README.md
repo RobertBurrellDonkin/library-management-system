@@ -346,6 +346,11 @@ Consistency in packaging naming conventions facilities this process.
     * A low latency solution might have traded otherwise.
 
 ## Library Design
+* As the CAP Theorem neatly illustrates, the design of a concurrent solution requires trading off some qualities for
+others. Designs within the context of cloud based architectures also need to factor in concerns
+around **elasticity** (the ability to scale up and down to meet demand efficiently) and about the costs of **horizontal** (more instances) verses **vertical**
+  (more powerful instances). For the purpose of this exercise, we'll need to make some 
+assumptions to make progress.
 * For a small library with a few books then a set or list. Let's assume that the library
   management system should support large numbers of books whilst providing an efficient
   find by unique attribute (ISBN). Based on a Map.
