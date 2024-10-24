@@ -511,43 +511,41 @@ An empty **POST** to a path based on the resource feels more RESTful and so that
 # Additional Features and Optimizations
 
 ## Caching Books
+Any cache has costs. Without a detailed understanding of the traffic, it is hard to know in advance
+whether caching would be worth the costs. Using dependency injection and following a write through cache
+pattern implementing a uniform interface allows caching to be added and remove by configuration changes.
+This approach would be well suited to spring profiles but time was against me.
 
-* Maintaining even a simple cache of limited size imposes costs, especially when concurrency is
-  considered. It is hard to know in advance whether caching would be worth the costs.
-    * In the spirit of a Lean Proof of Concept, let's go ahead and add a cache but take advantage
-      of dependency injection and a uniform interface to allow use to reconfigure easily without
-      the cache.
-    * This is the sort of circumstances well suited to spring profiles but time was against me.
-    * A natural pattern in these circumstances would be a write through cache.
-* Searching by Author is likely to be slow, perhaps too slow for large libraries.
-    * Adding a search cache would be reasonable but the spec talks in terms of frequently
-      accessed books and effectively caching search results requires quite a lot of knowledge
-      around how search happens in production. Better to leave that problem will later.
-* Let's assume that it's acceptable to
-    * cache a limited (but configurable) number of books
-      by ISBN,
+Searching by Author is likely to be slow, perhaps too slow for large libraries but would require a lot
+of assumptions to be made before it could be done well. The requirement talk about frequently accessed 
+books. So the search problem is likely out of scope.
+
+Let's assume that it's acceptable to
+    * cache a limited (but configurable) number of books by ISBN,
     * evicted least recently used books to make space, and
-    * invalidate on write by evicting.
-* This leads to a simple design which is good enough for an initial delivery until good data
-  is available from production.
+    * invalidate on write by evicting. 
+
+This leads naturally to a simple design based on a LRUCache. 
 
 ## Basic Rate Limits
+The API endpoints could be indirectly rate limited by throttling at the service layer. Perhaps by
+AOP or by create a new implementation of the service interface. Adding a rate limit behind the cache 
+would protect the service whilst allowing the cache to do the heavy lifting under load.
 
-* The API endpoints could be indirectly rate limited by throttling at the service layer
-    * This could be done elegantly by implementing the uniform interface, or by AOP.
-    * Adding a rate limit after the cache would protect the service whilst allowing the cache
-      to do the heavy lifting under load.
-* Let's assume that the requirement is to limit the total rate in the HTTP layer.
-    * The natural design would be to use a filter into the HTTP chain.
-    * Let's opt for a HandlerInterceptors for the end points until /api/books
-* There are various ways that a rate might be counted.
-    * In billing scenarios, hits per second are common.
-    * Let's assume that it is the number of concurrent requests in flight that should be limited.
-        * This protects the microservice but is more friendly to clients.
-* There are many approaches to implementing the count. I have opted for a Semaphore since
+The spec reads like it has in mind something more direct.
+
+Let's assume that the requirement is to limit the total rate in the HTTP layer. The natural design would be to 
+use a filter into the HTTP chain. Let's opt for a `HandlerInterceptor`.
+
+There are several reasonable ways that a rate might be counted. For example, in billing scenarios, 
+hits per second may be appropriate. Let's assume that it is the number of concurrent requests in flight that 
+should be limited. This protects the microservice but is more friendly to clients than a per second limiter.
+
+There are many reasonable approaches to implementing the count. I have opted for a Semaphore since
   the code is simply and could easily be varied to be more friendly to burstable loads by
   allowing efficient blocking for a short period whilst waiting for a request to complete.
-* This is a basic design. A long-lived microservice might need to consider leaks more deeply
+
+This is a basic design. A long-lived microservice might need to consider leaks more deeply
   as well as ways to reset the count, whether automatically or manually.
 
 ## Simple JWT Authentication
