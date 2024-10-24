@@ -521,9 +521,9 @@ of assumptions to be made before it could be done well. The requirement talk abo
 books. So the search problem is likely out of scope.
 
 Let's assume that it's acceptable to
-    * cache a limited (but configurable) number of books by ISBN,
-    * evicted least recently used books to make space, and
-    * invalidate on write by evicting. 
+ * cache a limited (but configurable) number of books by ISBN,
+ * evicted least recently used books to make space, and
+ * invalidate on write by evicting. 
 
 This leads naturally to a simple design based on a LRUCache. 
 
