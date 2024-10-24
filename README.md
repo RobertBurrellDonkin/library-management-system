@@ -351,11 +351,21 @@ others.
   * Designs within the context of cloud based architectures also need to factor in concerns
   around **elasticity** (the ability to scale up and down to meet demand efficiently) and about the costs of **horizontal** (more instances) verses **vertical**
     (more powerful instances).
-  * An appropriate design would trade **less valuable** qualities for **more valuable** ones.
-    * For example, a high throughput concurrent solution might trade off addition costs per instance
-      (more memory) and less elasticity (increased instance boot costs) for more maintainable and readable concurrency approaches 
-      that are less heavily optimised.
+  * An appropriate design trades **less valuable** qualities for **more valuable** ones.
+    * For example
+      * A high throughput concurrent solution might trade off addition costs per instance
+        (more memory) and less elasticity (increased instance boot costs) for more maintainable and readable concurrency approaches 
+        that are less heavily optimised.
+      * A low latency design might adopt more sophisticated concurrency paradigms which require
+      more time to safely maintain.
   * For the purpose of this exercise, we'll need to make some assumptions to make progress.
+* A **Lean Proof of Concept** would be one suitable use case for the Library class described.
+  * In this case, we might look to trade off some architectural qualities such as horizontal scalability
+  and elasticity for time to initial delivery into production. Development of solutions with improved
+  elasticity and horizontal scalability would be on the future roadmap but could be informed 
+  by data collected from this initial delivery.
+  * Let assume that this microservice will be such a **Lean Proof of Concept** and be deployed
+  as a singleton microservice on a capable instance.
 * For a small library with a few books then a set or list. Let's assume that the library
   management system should support large numbers of books whilst providing an efficient
   find by unique attribute (ISBN). Based on a Map.
