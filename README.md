@@ -501,17 +501,22 @@ copies are available.
 is available from production.
 
 ## Basic Rate Limits
-  * For rate limiting the services, a delegate or perhaps AOP annotations would have been an elegant solution.
-    * We could limit the endpoints indirectly by rate limiting the services in this fashion but
-          a more direct approach would seem more natural.
-  * Opt for a HandlerInterceptors for the end points until /api/books
-  * There are different ways rate limits might be accomplished but we'll opt for a RESTful
-      approach and return an appropriate HTTP code when the rate is beyond the limit.
-  * Thinking about what we are limiting, there are several reasonable interpretations
-      * we could limit the number of concurrent requests in flight
-      * or limit the number of requests within a time period
-  * Limiting concurrent requests protects the but is more friendly to clients. Let's assume that
-    billing isn't related to rate limiting and limit concurrent requests.
+  * The API endpoints could be indirectly rate limited by throttling at the service layer
+    * This could be done elegantly by implementing the uniform interface, or by AOP.
+    * Adding a rate limit after the cache would protect the service whilst allowing the cache
+    to do the heavy lifting under load.
+  * Let's assume that the requirement is to limit the total rate in the HTTP layer.
+    * The natural design would be to use a filter into the HTTP chain.
+    * Let's opt for a HandlerInterceptors for the end points until /api/books
+  * There are various ways that a rate might be counted. 
+    * In billing scenarios, hits per second are common.
+    * Let's assume that it is the number of concurrent requests in flight that should be limited.
+      * This protects the microservice but is more friendly to clients.
+  * There are many approaches to implementing the count. I have opted for a Semaphore since
+  the code is simply and could easily be varied to be more friendly to burstable loads by 
+  allowing efficient blocking for a short period whilst waiting for a request to complete.
+  * This is a basic design. A long-lived microservice might need to consider leaks more deeply
+  as well as ways to reset the count, whether automatically or manually.
 
 ## Simple JWT Authentication
 
