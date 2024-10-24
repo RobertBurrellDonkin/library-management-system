@@ -541,14 +541,23 @@ copies are available.
     * For production use,
     * Responsibility of the token provider to add expired. So won't check.
 
-## Available Copies - Compare And Swap 
+## Decrementing Available Copies - Compare And Swap 
 
-* TODO CAS approach for borrow
+Compare and Swap (CAS) is a concurrency technique often associated with non-blocking algorithms.
+It is supported well in Java by the Atomic concurrency classes. 
 
+In this case, we wish to conditionally decrement the number of available copies for a book. 
 
+A blocking based approach would lock out concurrent access to the block that mutates the
+number of available copies. Both increments and decrements to the same book would need to 
+be serialized.
 
+A non-blocking approach retries the validation if the value has been modified in the window
+between retrieval and storing the updated value. 
 
+This trades off decreased efficiency when borrow is heavily contended for improved efficiency
+when borrowing is uncontested. It seems reasonable to assume that borrowers will rarely
+compete to borrow the same book at the same time so this is a good starting point.
  
-
-
-  
+Of course, this is all paper theory. The only real way to tell is to profile alternative
+approaches at volume using like-live data.
