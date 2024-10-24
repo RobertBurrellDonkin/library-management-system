@@ -263,7 +263,6 @@ where
 
 * **Status** `404 NOT FOUND`
 * **Body** (empty)
-*
 
 ##### No Available Copies
 
@@ -312,6 +311,7 @@ where
 
 ### Java
 
+**Java 8**
 * is now end of life (as is Spring Boot 2),
 * has known security vulnerabilities,
 * and is not supported by SpringBoot 3.
