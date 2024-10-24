@@ -323,32 +323,27 @@ a service mesh such as Istio.
 grained microservice architecture. Developers without recent familiarity
 with a particular project need to be able to get up to speed quickly. 
 Consistency in packaging naming conventions facilities this process.
-  * Let's assume that these conventions are reasonably standard with a slight
-  bias towards a flatter structure.
+  * Let's assume that these standard are reasonably close to common Spring Boot conventions
+  with a slight bias towards a flatter structure allowing additional top level packages.
   * I lead towards a finely grained microservice architecture. Overly deep package structures
   indicating overly complex microservice may be a *code smell* highlighting
   a microservice which has drift from the path of single responsibility and
   a system which is failing to appropriately separate concerns.
 
-## Domain
-* We could model Book as a value object using a Record. This lends itself to an
-  event driven architecture which would have advantages in a distributed system
-  context.
-    * Let's keep things simple for now by assuming that we're aiming at first
-      to create a singleton microservice backed by an ephemeral library class.
-      This is a classic choice for rapid prototyping a proof of concept. We should be mindful around SOLID principles
-      since we're likely to
-      want to be able to switch out this implementation for a data store (either RDBMS or NoSQL)
-      or else some sort of distributed cache for production.
-* We'll model as a classic POJO. Let's assume that only available copies is
-  mutable. At some later stage, should the API evolve to include additional
-  mutation methods, we can add that to the domain object.
-    * The Library API includes a method that passes in a book object. Interesting
-      design question about whether to allow subclasses. I tend to prefer making objects
-      final in case of doubt around whether the API is intended to allow subclassing.
-      Let's go with that for now.
-    * There are a lot of parameters with the same type. Let's add a builder to increase
-      readability.
+## The Domain 
+* Microservice domain models tend to lean towards one of two patterns
+  * Rich POJOs encapsulating domain logic, or
+  * Simple immutable data records
+* **Immutability** reduces the difficulty of maintaining and comprehending concurrent solutions.
+  * An internal mutable representation unable to **escape** is a common pattern for concurrent 
+  in-memory stores.
+* This solution ended up modelling **Book** as a simple immutable *Record* in the domain.
+  * This design trades off the creation of additional Book objects for reduced contention and the
+  use of non-blocking algorithms in the store.
+    * The microservices deployment should be tuned to have additional memory, spare CPUs and
+    an appropriate parallel GC algorithm to allow these objects to be efficiently garbage 
+    collected.
+    * A low latency solution might have traded otherwise.
 
 ## Library Design
 * For a small library with a few books then a set or list. Let's assume that the library
