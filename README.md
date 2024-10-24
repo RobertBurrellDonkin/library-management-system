@@ -28,7 +28,8 @@ By default, the microservice will start on port `8080` (but this can be changed 
 
 **Please note** that for security reasons, executing `mvn spring-boot:run` without a profile will forbid all requests.
 It is recommended that either the `insecure` or the `secure` profile should be activated. See below for details. 
-It is expected that the container would supply an appropriate authentication configuration. 
+
+When deployed, the container would supply an appropriate authentication configuration. 
 
 ### Without JWT Authorization
 
