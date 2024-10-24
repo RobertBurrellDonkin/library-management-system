@@ -322,7 +322,7 @@ a service mesh such as Istio.
 * Consistency is important when maintaining projects within a finely
 grained microservice architecture. Developers without recent familiarity
 with a particular project need to be able to get up to speed quickly. 
-Consistency in packaging conventions facilities this process.
+Consistency in packaging naming conventions facilities this process.
   * Let's assume that these conventions are reasonably standard with a slight
   bias towards a flatter structure.
   * I lead towards a finely grained microservice architecture. Overly deep package structures
