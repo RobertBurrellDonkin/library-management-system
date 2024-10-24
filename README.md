@@ -24,6 +24,9 @@ authentication variations.
 
 By default, the microservice will start on port 8080 but this can be changed using the usual mechanisms
 
+**Please note** that for security reasons, `mvn spring-boot:run` without a profile will forbid all requests. It is
+recommended that either the `insecure` or `secure` profile should be active. See JWT below for details.
+
 ### Without JWT Authorization
 
 The ``insecure`` profile permits all requests.
@@ -474,9 +477,25 @@ copies are available.
       returned/
 
 ## Configuration
-* I'll need to get around to documenting the configuration at some stage.
-* Added configuration property to switch auth on and off. Added no authentication profile to
-  allow manual and automated testing.
+
+### Profiles
+
+| Profile    | Description                                                                            |
+|------------|----------------------------------------------------------------------------------------|
+| `insecure` | Permits all access whether authenticated or unauthenticated. Intended for use in test. |
+| `secure`   | Configures the public key from a key pair used for testing JWT.                        |
+
+### Configurable Properties
+
+| Property                         | Data    | Description                                            |
+|----------------------------------|---------|--------------------------------------------------------|
+| app.cache.books.max-size         | int     | The max number of books to be cached                   |
+| app.cache.books.initial-capacity | int     | The initial capacity of the book cache                 |
+| app.cache.books.load-factor      | decimal | When the book cache should increase capacity           |
+| app.api.max-concurrent-requests  | int     | Concurrent requests above this value will be throttled |
+| app.security.authentication      | boolean | Whether unauthorized access is permitted               |
+| app.security.jwt.algorithm       | string  | Java standard name for the public key algorithm        |
+| app.security.jwt.public-key      | string  | Base64 encoded X509EncodedKeySpec                      |
 
 # Additional Features and Optimizations
 
