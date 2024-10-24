@@ -478,16 +478,14 @@ Java 8
 * In a typical RESTful API, a search maps to a `GET` with appropriate query params.
 
 ## BorrowBook and ReturnBook
+CRUD endpoints map naturally to HTTP verbs. BorrowBook and ReturnBook execute domain specific operations on
+the state of a resource. They are not idempotent and cannot be safely cached or repeated. **POST** is the 
+only reasonable option in cases like this. 
 
-* These are operations performed on a resource with domain semantics (as opposed to
-  CRUD which match well to HTTP verbs).
-    * PATCH would be the closest verb but the semantics would be too distinctly different.
-    * These operations are not idempotent and should not be cached or repeated.
-    * POST is pretty much the only reasonable option. And this is commonly used for operations.
-* In an event driven architecture, these might fit into the event paradigm with a JSON
-  payload posted to an endpoint. This would seem out of character with other elements of the API. 
-* The best option seemed to be following the pattern of POSTing to operation endpoints
-  with paths rooted at the resource.
+An event driven architecture might model these operations as payloads. Adopting that style
+would cut across the grain of the rest of this API. Which seems like a mistake.
+
+An empty **POST** to a path based on the resource feels more RESTful and so that was the design adopted.
 
 ## Configuration
 
