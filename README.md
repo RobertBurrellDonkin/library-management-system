@@ -513,24 +513,54 @@ copies are available.
 ## Simple JWT Authentication
 
 * Good security design requires knowledge, both of the technologies and the context. A production
-  standard JWT implementation would rest on a lot of assumptions.
-    * Let's assume that this API will be accessed by other microservices who will bwe able to mint tokens either
-      directly for example by a service like Amazon Cognito or by passing through.
-        * JWT could be passed via a cookie, but we'll opt for a header since this is usually more
-          natural for microservice to microservice calls.
-        * We'll parse the token and check for a claim about the subject (sub). If this is present,
-          we'll check using a simple interface whether this subject is allowed access.
-        * Let's assume that only a handful of microservices are authorised. So we'll externalise
-          the configuration. For larger numbers of subjects, we'd probably opt for a data store or
-          a dedicated identity federator.
-        * There's also the expiry, which we should really check. Typically a production token issued
-          by a system such Amazon Cognito would have a limited time before expiry.
-        * There is also the question of algorithm and key. Public/private key cryptography is
-          the more robust solution. The public key is not confidential and could be safely
-          externalised as part of the configuration.
-    * There is also the question of testing, both manual and automated.
-        * Profiles are likely to be an attractive option.
-        * "jwt" and "unrestricted" profiles
+  quality JWT implementation rests on many assumptions.
+* Let's assume that this API will be accessed by other microservices, and that these 
+microservices will be able to acquire JWT tokens independently.
+    * Perhaps from a third party service like Amazon Cognito, or
+    * by generating them.
+* Spring Boot 3 recommends Spring Security. Spring Security is complex and sophisticated.  
+  * The spec does not explicitly include authorization. An approach based on using a 
+  simple HTTP filter without integration with Spring Security would satisfy the base 
+  requirements.
+  * Let's assume that authorization based on the subject of the token will be needed at
+  some later stage and go with a Spring Security based approach, accepting that it will
+  be complex.
+  * Given the assumption that tokens will be minted by some third party - rather than 
+  by this microservice - in Spring Security terms we will be going down the PreAuthentication
+  route and should adopt the PreAuthentication framework, even though it might appear 
+  a little unintuitive.
+* There are numerous ways that caller could supply JWT tokens. The conventional approach 
+for RESTful APIs is to pass the JWT token as a Bearer token in an HTTP AUTHORIZATION header.
+  * Let's assume that this approach is appropriate.
+* A JWT token consist of a payload and meta-data. The conventional design when JWT is used
+for authentication is to use the payload to pass claims with a signature in the meta-data.
+  * Let's assume that this approach is appropriate.
+* JWT supports encryption to protect sensitive payloads. HTTPS would encrypt bearer tokens
+together with the rest of the headers.
+  * Let's assume that the tokens will not be encrypted.
+* It is natural to map the Subject claimed by the token to the Spring Security 
+Principal, though not always correct.
+    * Let's assume that this is correct in this case.
+* JWT supports a wide range of signature algorithms, both symmetric (shared secret) 
+and asymmetric (public-private key). 
+* 
+  * who will bwe able to mint tokens either
+  directly for example by a service like Amazon Cognito or by passing through.
+    * JWT could be passed via a cookie, but we'll opt for a header since this is usually more
+      natural for microservice to microservice calls.
+    * We'll parse the token and check for a claim about the subject (sub). If this is present,
+      we'll check using a simple interface whether this subject is allowed access.
+    * Let's assume that only a handful of microservices are authorised. So we'll externalise
+      the configuration. For larger numbers of subjects, we'd probably opt for a data store or
+      a dedicated identity federator.
+    * There's also the expiry, which we should really check. Typically a production token issued
+      by a system such Amazon Cognito would have a limited time before expiry.
+    * There is also the question of algorithm and key. Public/private key cryptography is
+      the more robust solution. The public key is not confidential and could be safely
+      externalised as part of the configuration.
+  * There is also the question of testing, both manual and automated.
+      * Profiles are likely to be an attractive option.
+      * "jwt" and "unrestricted" profiles
 * Some interesting design decisions around Jwt authenticator. Library now parser and validates in a single operation.
   So makes sense to inject the validation key.
     * I opted to use a domain object for readability.
