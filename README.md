@@ -21,14 +21,14 @@ This document tries to keep close to the structure outlined in the submission in
 
 ## How To Run
 
-The solution is a conventional `Spring Boot 3` microservice and can be run in the usual way. Profiles are used to allow
+The solution is a conventional `Spring Boot 3` microservice and can be run in the usual way. Profiles facilitate
 authentication variations.
 
-By default, the microservice will start on port `8080` but this can be changed using the usual mechanisms.
+By default, the microservice will start on port `8080` (but this can be changed using the usual mechanisms).
 
 **Please note** that for security reasons, executing `mvn spring-boot:run` without a profile will forbid all requests.
-It is
-recommended that either the `insecure` or `secure` profile should be active. See below for details.
+It is recommended that either the `insecure` or the `secure` profile should be activated. See below for details. 
+It is expected that the container would supply an appropriate authentication configuration. 
 
 ### Without JWT Authorization
 
@@ -48,7 +48,7 @@ The ``secure`` profile includes a sample public key (whose private key is used i
 $ mvn spring-boot:run -Dspring-boot.run.profiles=secure
 ```
 
-A convenient way authorize access whilst running this profile is to add the follow HTTP Header
+A convenient way to authorize access is to add the follow header
 
 ```
 Authorization: Bearer eyJhbGciOiJSUzUxMiJ9.eyJzdWIiOiJhZG1pbiJ9.J7apSRgAlXDZjZ1kY1K4GRhjn1ikq3qSQrGJy7P6d5wSxBcs27CbWfF8alJmffpXUsuM2WQbAHsCbzG6Httd1K8sYBE1TCakOPT84fg-BzAIPMVxtpGc9Mtv_tSj_QYb96atZJjjtkobKlyGz4t2LIU10ZyN55QQIN2pHKuMkpnKGEKTlCYAzBFFC7NzAPBtPyJXt7Thl1oC-ChHBBeKEWE--cifLRyFDru3G6o-r5ud5hpgM7rCV3AGICRUppvZoZxdMRb94ECuhCzveEbY9fEMKCeWQKlIC4DNppxzVkXQ6NYjZnhx-S9FuVaTtJgotZPdy3yxLru9LGRUIJk1TTOF08zP1dbvKX4QDac7_3YqLkCCLMy_gRRI71rqypnbZkh5R5r1_S-Rv9m5B9IA7c-kBc3NnAZ_oAjF2YGlL1QotbkF1lr7XBkFT4OHgKqRukiwiWjUMURyexxel_y8iL06_GB9LgyvWiYpckdfWJK9_yXE_q4sJXuMTAODND5FPX7KfqYJjg3Ok5uqGkor3ZEDDj9Bbm2tx-uLO4SC56HxSwcuEVwBxdHqYrEKL-99EcgIKaZrrXLjtBgtSP2PuhJxFpzEzu7aEro534p4VO3ySfjG8s-2GMEzbUirx15MSlaiizi7mdPqbWvBNS2rGzXmUELjsjt_z9ve5KiILW4
