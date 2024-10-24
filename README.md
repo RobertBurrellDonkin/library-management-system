@@ -58,7 +58,7 @@ Authorization: Bearer eyJhbGciOiJSUzUxMiJ9.eyJzdWIiOiJhZG1pbiJ9.J7apSRgAlXDZjZ1k
 Alternatively, `JwtTokenBuilder` generates suitable JWT tokens for the integration tests, and could be used to generate
 tokens with other claims.
 
-**Note** that this solution **authenticates** using sighed JWT bearer tokens but **does not** include **authorization**.
+**Note** that this solution **authenticates** using signed JWT bearer tokens but **does not** include **authorization**.
 Full access is permitted to all authenticated subjects. It is integrated with Spring Security and could be developed
 into a more comprehensive solution
 in the usual fashion.
