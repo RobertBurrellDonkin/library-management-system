@@ -23,7 +23,7 @@ This document tries to keep close to the structure outlined in the submission in
 The solution is a conventional `Spring Boot 3` microservice and can be run in the usual way. Profiles are used to allow
 authentication variations.
 
-By default, the microservice will start on port `8080` but this can be changed using the usual mechanisms
+By default, the microservice will start on port `8080` but this can be changed using the usual mechanisms.
 
 **Please note** that for security reasons, executing `mvn spring-boot:run` without a profile will forbid all requests. It is
 recommended that either the `insecure` or `secure` profile should be active. See below for details.
@@ -55,7 +55,7 @@ Alternatively, `JwtTokenBuilder` generates suitable JWT tokens for the integrati
 tokens with other claims.
 
 **Note** that this solution **authenticates** using sighed JWT bearer tokens but **does not** include **authorization**.
-Full access is permitted to all subjects. It is integrated with Spring Security and could be developed into a more comprehensive solution 
+Full access is permitted to all authenticated subjects. It is integrated with Spring Security and could be developed into a more comprehensive solution 
 in the usual fashion.
 
 ## RESTful API
@@ -319,7 +319,7 @@ a system of **collaborating microservices** perhaps orchestrated by Kubernetes o
 a service mesh such as Istio. 
   * In this sort of **microservices architecture**, domain logic and functionality will
   be reused at the microservices level (rather than the library level). In this case,
-  by calling the RESTful endpoints, as opposed to import library code. 
+  by calling the RESTful endpoints, as opposed to importing library code. 
 * A multi-module project isn't needed for a thin microservice such as this,
   and we do not expect other projects to depend on code from this project. 
 * We'll adopt a single module project design.
@@ -331,7 +331,7 @@ Consistency in packaging naming conventions facilities this process.
   with a slight bias towards a flatter structure allowing additional top level packages.
   * I lead towards a finely grained microservice architecture. Overly deep package structures
   indicating overly complex microservice may be a *code smell* highlighting
-  a microservice which has drift from the path of single responsibility and
+  a microservice which has drifted from the path of single responsibility and
   a system which is failing to appropriately separate concerns.
 
 ## The Domain 
@@ -373,7 +373,7 @@ others.
 * Data flow is an important to consider when designing concurrent solutions. Often how a 
 system is used will only be known once it is in use in production. 
   * A Lean Proof of Concept based on some reasonable assumptions can be delivered into 
-  production early and monitoring use to quantify the requirements.
+  production early and then monitored to quantify usage.
   * Let's assume that 
     * books will 
         * be added and remove relatively rarely and
@@ -403,10 +403,10 @@ and deletions (remove book).
 * Searches by ISBN will retrieve data by key and are expected to be efficient. 
   * Given our assumptions, it is reasonable to accept a slow traversal for the search by author.
     * We have the option of adding in a front side cache later for search results.
-* There is an API design decision around how to support addBook when adding a book with the same
-  ISBN twice to the same library. Though it might be reasonable to merge the availabilityCount,
+* There is an API design decision around how addBook should behave when a book with the same
+  ISBN is added twice. Though it might be reasonable to merge the availabilityCount,
   there seems no natural way to merge different titles, authors and publication years. 
-  * Let's assume that a book cannot be added twice.
+  * Let's assume that calling AddBook with the same book twice is an error.
   * The only attribute which can be mutated by the API is availableCopies.
     * Let's make the reasonable assumption that all other attributes are immutable and
     that availableCopies can only be incremented or decremented
@@ -438,7 +438,7 @@ for less complex and less efficient initial approach.
     * (The boolean returned indicates that the book is not present in the library.)
 
 # RESTful API Design Notes
-* Aims to follow closely to REST principals and the consensus about RESTful web services.
+* Aims to follow REST principals and the concensus around RESTful web services closely.
   * Use HTTP status code to indicate success or failure scenarios
     * In some failure scenarios - for example validation - additional details are
     returned as JSON to aid in troubleshooting.
