@@ -12,7 +12,7 @@
     <artifactId>library</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>library</name>
-    <description>Spring Boot library project</description>
+    <description>A Sample Concurrent Library Management System with RESTful API</description>
     <url/>
     <licenses>
         <license/>
