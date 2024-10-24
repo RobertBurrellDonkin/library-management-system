@@ -406,7 +406,20 @@ and deletions (remove book).
   * The only attribute which can be mutated by the API is availableCopies.
     * Let's make the reasonable assumption that all other attributes are immutable and
     that availableCopies can only be incremented or decremented
- 
+* Given these assumptions and our choice of a ConcurrentMap based approach, it seems reasonable
+to use a mutable internal data class which will result in more obvious, readable and maintainable 
+code than a more sophisticated approach.  
+  * Given the front side cache proposed in the spec, this approach should be efficient enough
+  to make this a reasonable trade off.
+* The spec is silent on the required behaviour when a call is made to borrow a book when no
+copies are available. 
+  * Our imagined use case is **Lean Proof of Concept**. 
+  Let's apply the Principal of Least Surprise and insist that our Library will only allow
+  books to be borrowed when there are copies available.
+  * This additional requirement introduces some interesting design factors which will be 
+  discussed in the final section *Available Copies - Compare And Swap*.
+
+### API Design Details
 * Until
   business logic TODO let's assume that the library should just reject.
     * We could throw an exception or use a return value. The principle of least surprise
@@ -415,9 +428,6 @@ and deletions (remove book).
       of validation. Consistency with Java collection leans towards returning a value.
     * Let's go with consistency for the moment.
 * For consistency with Java collections, removeBook will return a boolean
-* Let's assume that the efficiency of searches like findBooksByAuthor are less important
-  than simplicity and maintainability. We have the option of adding a front side cache to improve
-  search performance later. We'll just use a filter.
 * Let's opt to keep the library code more readable and maintainable by making the Book domain
   object thread safe. Book will need to be final to indicate that subclassing is not recommended.
   We could have opted for value objects and an internal implement but that would have added
@@ -531,7 +541,7 @@ and deletions (remove book).
     * For production use,
     * Responsibility of the token provider to add expired. So won't check.
 
-## Compare And Swap
+## Available Copies - Compare And Swap 
 
 * TODO CAS approach for borrow
 
