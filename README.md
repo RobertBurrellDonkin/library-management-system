@@ -338,7 +338,7 @@ Java 8
   Consistency in packaging naming conventions facilities this process.
     * Let's assume that these standard are reasonably close to common Spring Boot conventions
       with a slight bias towards a flatter structure allowing additional top level packages.
-    * I lead towards a finely grained microservice architecture. Overly deep package structures
+    * I lean towards a finely grained microservice architecture. Overly deep package structures
       indicating overly complex microservice may be a *code smell* highlighting
       a microservice which has drifted from the path of single responsibility and
       a system which is failing to appropriately separate concerns.
