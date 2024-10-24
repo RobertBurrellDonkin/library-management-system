@@ -311,7 +311,7 @@ where
 
 ### Java
 
-**Java 8**
+Java 8
 * is now end of life (as is Spring Boot 2),
 * has known security vulnerabilities,
 * and is not supported by SpringBoot 3.
@@ -363,9 +363,8 @@ where
 * As the CAP Theorem neatly illustrates, the design of a concurrent solution requires trading off some qualities for
   others.
     * Designs within the context of cloud based architectures also need to factor in concerns
-      around **elasticity** (the ability to scale up and down to meet demand efficiently) and about the costs of *
-      *horizontal** (more instances) verses **vertical**
-      (more powerful instances).
+      around **elasticity** (the ability to scale up and down to meet demand efficiently) and about the costs of
+      **horizontal** (more instances) verses **vertical** (more powerful instances) scaling.
     * An appropriate design trades **less valuable** qualities for **more valuable** ones.
         * For example
             * A high throughput concurrent solution might trade off addition costs per instance
@@ -382,10 +381,10 @@ where
       by data collected from this initial delivery.
     * Let assume that this microservice will be such a **Lean Proof of Concept** and be deployed
       as a singleton microservice on a capable instance.
-* Data flow is an important to consider when designing concurrent solutions. Often how a
-  system is used will only be known once it is in use in production.
-    * A Lean Proof of Concept based on some reasonable assumptions can be delivered into
-      production early and then monitored to quantify usage.
+* Data flow is an important to consider when designing concurrent solutions. Typically how a
+  system will be used is only known after its delivery to production.
+    * A Lean Proof of Concept based on some reasonable assumptions allows monitoring to quantify usage,
+      and use that data to inform design improvements. 
     * Let's assume that
         * books will
             * be added and remove relatively rarely and
@@ -397,31 +396,28 @@ where
 * Borrowing and returning are based on ISBN.
     * Given our assumption that these operations occur much more frequently than addition and removal,
       we should trade in favour of retrieval by ISBN at the price of insertion and deletion.
-    * We will base Library on a Map indexed by ISBN.
+    * A map indexed by ISBN seems like the natural design for data storage.
 * Given our assumptions, retrieval operations by key (borrow, return and find by ISBN) are
   expected to occur with far greater frequency than traversals (find by author), insertions (add book)
   and deletions (remove book).
-    * Synchronising every method or the entire map would be inefficient in these circumstances.
-* We need to consider whether to trade *strong consistency* for efficiency.
-    * We are assuming that read operations on the map (get by key and traversals) are far more
+    * Synchronising every method or the entire map would be inefficient given these assumptions.
+* We should consider whether to trade *strong consistency* for efficiency.
+    * We assume that read operations on the map (get by key and traversals) are far more
       common than write operations (insertions and deletions).
     * A *strongly consistent* solution would need to lock out reads during writes. This locking
       overhead would be paid on every read.
     * A *weakly consistent* solution would trade off some stale reads for less overhead per read.
-    * Let's assume that allowing *weak consistency* is an acceptable starting point for a Lean
-      Proof of Concept.
-    * The Library design adopted is based on a ConcurrentSkipListMap which is an efficient but
-      weakly consistent thread safe map.
+    * Let's assume that allowing *weak consistency* is acceptable, and use a ConcurrentSkipListMap
+      which is an efficient but weakly consistent thread-safe map.
 * Searches by ISBN will retrieve data by key and are expected to be efficient.
     * Given our assumptions, it is reasonable to accept a slow traversal for the search by author.
         * We have the option of adding in a front side cache later for search results.
-* There is an API design decision around how addBook should behave when a book with the same
-  ISBN is added twice. Though it might be reasonable to merge the availabilityCount,
-  there seems no natural way to merge different titles, authors and publication years.
-    * Let's assume that calling AddBook with the same book twice is an error.
-    * The only attribute which can be mutated by the API is availableCopies.
-        * Let's make the reasonable assumption that all other attributes are immutable and
-          that availableCopies can only be incremented or decremented
+* The spec is slient about the behaviour of AddBook in the case that a book with the same ISBN is already
+  present in the library.
+    * There seems no natural way to merge the attributes.
+    * Let's assume that it is acceptable to reject in this case.
+* The only attribute which can be mutated by the API is availableCopies.
+  * Let's make the reasonable assumption that all other attributes could be immutable.
 * Given these assumptions and our choice of a ConcurrentMap based approach, it seems reasonable
   to use a mutable internal data class which will result in more obvious, readable and maintainable
   code than a more sophisticated approach.
@@ -436,13 +432,12 @@ where
       discussed in the final section *Available Copies - Compare And Swap*.
 
 ### API Design Details
-
 * A reactive design was considered but in the spirit of a Lean Proof of Concept, opted
-  for less complex and less efficient initial approach.
+  for less complex and less efficient non-reactive approach for now.
 * The API design
-    * generally follows the style of Java collections
+    * generally follows the style of Java collections,
     * whilst taking advantage of `Optional` to avoid nulls.
-    * As with Java collections, booleans are returned to indicate whether an operation has failure or succeeded
+    * As with Java collections, booleans are returned to indicate whether an operation has failure or succeeded.
     * The only anticipated exception is thrown by borrowBook when there are no copies available
         * It is intended that calls should first check by a call to `findBookByISBN` that there are
           copies available.
@@ -452,14 +447,14 @@ where
 
 # RESTful API Design Notes
 
-* Aims to follow REST principals and the concensus around RESTful web services closely.
-    * Use HTTP status code to indicate success or failure scenarios
-        * In some failure scenarios - for example validation - additional details are
-          returned as JSON to aid in troubleshooting.
-        * Aim to stick to a limited palette applied consistently.
-* JSON seems the natural choice for a Lean Proof of Concept.
+* The design:
+  * Aims to follow closely REST principals and the RESTful web services concensus as far as possible.
+  * Uses HTTP status code to indicate success or failure scenarios.
+    * In some failure scenarios - for example validation - additional details are returned as JSON to aid in troubleshooting.
+  * Aim to stick to a limited palette applied consistently.
+* JSON seems the natural choice.
     * XML would have been reasonable but would have entailed more overhead.
-* Book seems the natural resource. `/books` is the conventional path.
+* Book seems the natural resource, with `/books` the conventional path.
 * Grouping all APIs under a path, separate from
   potential instrumentation paths, makes security and auditing more convenient.
     * Let's assume all microservice apis are rooted at `/api` which means the book API will be
@@ -484,8 +479,8 @@ where
 
 ## BorrowBook and ReturnBook
 
-* These are operations performed on a resource with domain semantics, as opposed to
-  CRUD which match well to HTTP verbs.
+* These are operations performed on a resource with domain semantics (as opposed to
+  CRUD which match well to HTTP verbs).
     * PATCH would be the closest verb but the semantics would be too distinctly different.
     * These operations are not idempotent and should not be cached or repeated.
     * POST is pretty much the only reasonable option. And this is commonly used for operations.
