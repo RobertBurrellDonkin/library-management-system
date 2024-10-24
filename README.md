@@ -398,22 +398,16 @@ and deletions (remove book).
   weakly consistent thread safe map. 
 * Searches by ISBN will retrieve data by key and are expected to be efficient. 
   * Given our assumptions, it is reasonable to accept a slow traversal for the search by author.
-    * We have the option of adding in a front side cache for search results.
-* For a small library with a few books then a set or list. Let's assume that the library
-  management system should support large numbers of books whilst providing an efficient
-  find by unique attribute (ISBN). Based on a Map.
-    * The simplest thread safe design would have been to use synchronisation on the public methods.
-      Effectively serializing access to the service. This would have had the advantage of simplicity and
-      maintainability.
-      For a small library, this would have been an excellent option.
-    * Let's assume the need to support concurrent access.
-    * Java has a rich range of options. For a high throughput, low latency application,  
-      a bespoke solution may be the best option.
-    * Let's assume that we are looking for reasonable concurrent efficient whilst maintaining
-      readability. ConcurrentSkipList TODO weaknesses, strengths
+    * We have the option of adding in a front side cache later for search results.
 * There is an API design decision around how to support addBook when adding a book with the same
   ISBN twice to the same library. Though it might be reasonable to merge the availabilityCount,
-  there seems no natural way to merge different titles, authors and publication years. Until
+  there seems no natural way to merge different titles, authors and publication years. 
+  * Let's assume that a book cannot be added twice.
+  * The only attribute which can be mutated by the API is availableCopies.
+    * Let's make the reasonable assumption that all other attributes are immutable and
+    that availableCopies can only be incremented or decremented
+ 
+* Until
   business logic TODO let's assume that the library should just reject.
     * We could throw an exception or use a return value. The principle of least surprise
       leans towards throwing an explicit exception.
