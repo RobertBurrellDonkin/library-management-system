@@ -478,7 +478,7 @@ Java 8
 * In a typical RESTful API, a search maps to a `GET` with appropriate query params.
 
 ## BorrowBook and ReturnBook
-CRUD endpoints map naturally to HTTP verbs. BorrowBook and ReturnBook execute domain specific operations on
+CRUD endpoints map naturally to HTTP verbs. `BorrowBook` and `ReturnBook` execute domain specific operations on
 the state of a resource. They are not idempotent and cannot be safely cached or repeated. **POST** is the 
 only reasonable option in cases like this. 
 
