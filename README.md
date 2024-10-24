@@ -541,35 +541,18 @@ together with the rest of the headers.
 * It is natural to map the Subject claimed by the token to the Spring Security 
 Principal, though not always correct.
     * Let's assume that this is correct in this case.
+* JWT tokens typically include a claim about expiry. When present, these should be enforced.
+  * Let's adopt Postel's Law and permit JWT tokens with signed subjects who are 
+  missing claims about expiry.
+* Given our assumption that authentication will be the responsibility of a third party, 
+we should pass dummy credentials to Spring Security rather than extract claims from the token.
+  * Even if the token includes credential claims, there is no need for these to be known by 
+  this microservice.
 * JWT supports a wide range of signature algorithms, both symmetric (shared secret) 
-and asymmetric (public-private key). 
-* 
-  * who will bwe able to mint tokens either
-  directly for example by a service like Amazon Cognito or by passing through.
-    * JWT could be passed via a cookie, but we'll opt for a header since this is usually more
-      natural for microservice to microservice calls.
-    * We'll parse the token and check for a claim about the subject (sub). If this is present,
-      we'll check using a simple interface whether this subject is allowed access.
-    * Let's assume that only a handful of microservices are authorised. So we'll externalise
-      the configuration. For larger numbers of subjects, we'd probably opt for a data store or
-      a dedicated identity federator.
-    * There's also the expiry, which we should really check. Typically a production token issued
-      by a system such Amazon Cognito would have a limited time before expiry.
-    * There is also the question of algorithm and key. Public/private key cryptography is
-      the more robust solution. The public key is not confidential and could be safely
-      externalised as part of the configuration.
-  * There is also the question of testing, both manual and automated.
-      * Profiles are likely to be an attractive option.
-      * "jwt" and "unrestricted" profiles
-* Some interesting design decisions around Jwt authenticator. Library now parser and validates in a single operation.
-  So makes sense to inject the validation key.
-    * I opted to use a domain object for readability.
-* The assumption is that isn't a user/password but a signed subject. This means we
-    * In Spring Security terms, this is a PreAuthenticated scenario. Spring Security provides a little framework for
-      scenarios such as this. Let's adopt it.
-    * This is a authentication, rather than authorization.
-    * For production use,
-    * Responsibility of the token provider to add expired. So won't check.
+and asymmetric (public-private key). Key distribution is a difficult problem, configuration
+would be involved and extensive testing would be needed on a variety of platforms.
+  * As a compromise in the spirit of a lean proof of concept, the `secure` profile configures an RSA public key whose private key
+  is included in the integration testing source code. 
 
 ## Decrementing Available Copies - Compare And Swap 
 
