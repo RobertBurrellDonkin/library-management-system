@@ -459,6 +459,11 @@ consensus around the best HTTP code to return in circumstances such as this.
    * `409 CONFLICT` is one common choice and using it would not be inconsistent, which 
 is why it was picked.
    * The rest of the API should adopt this pattern for consistency.
+  
+## FindBooksByAuthor
+ * Book resources are uniquely identified by ISBN. This is included in the path to a particular book. `FindBooksByISBN` is naturally a `GET` in a RESTful API.
+ * `FindBooksByAuthor` is essentially a search that can return none, one or many books.
+ * In a typical RESTful API, a search maps to a `GET` with appropriate query params. 
 
 ## BorrowBook and ReturnBook
 * These are operations performed on a resource with domain semantics, as opposed to 
