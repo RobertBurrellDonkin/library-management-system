@@ -2,6 +2,8 @@ package name.robertburrelldonkin.library.interceptors;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.concurrent.Semaphore;
@@ -14,6 +16,8 @@ import static org.springframework.http.HttpStatus.TOO_MANY_REQUESTS;
  */
 public class RateLimitingHandlerInterceptor implements HandlerInterceptor {
 
+    private final Logger logger = LoggerFactory.getLogger(RateLimitingHandlerInterceptor.class);
+
     private final Semaphore semaphore;
 
     public RateLimitingHandlerInterceptor(final int maxConcurrentRequests) {
@@ -25,6 +29,7 @@ public class RateLimitingHandlerInterceptor implements HandlerInterceptor {
         if (semaphore.tryAcquire()) {
             return true;
         }
+        logger.info("Too many requests");
         response.setStatus(TOO_MANY_REQUESTS.value());
         return false;
     }
